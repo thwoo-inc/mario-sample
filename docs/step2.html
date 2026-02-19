@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Step 2: ステージを作ろう - Mario Sample</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- ヘッダー -->
+  <header class="bg-green-500 text-white py-4 shadow-lg">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <a href="index.html" class="text-white hover:text-green-200 transition-colors">&larr; トップに戻る</a>
+        <span class="text-sm bg-green-600 px-3 py-1 rounded">STEP 2 / 4</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Step 2: ステージを作ろう</h1>
+    <p class="text-gray-600 mb-8">配列データからブロックを自動配置してステージを生成します</p>
+
+    <!-- 学習内容 -->
+    <section class="bg-green-50 rounded-lg p-6 mb-8">
+      <h2 class="text-xl font-bold text-green-800 mb-4">このステップで学ぶこと</h2>
+      <ul class="space-y-2 text-green-700">
+        <li class="flex items-start gap-2">
+          <span class="text-green-500 mt-1">&#10003;</span>
+          <span>2次元配列でステージデータを管理する方法</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-green-500 mt-1">&#10003;</span>
+          <span>Prefabを使ったオブジェクトの生成</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-green-500 mt-1">&#10003;</span>
+          <span>for文を使った繰り返し処理</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-green-500 mt-1">&#10003;</span>
+          <span>switch文による条件分岐</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 素材準備 -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">素材準備</h2>
+
+      <!-- プレースホルダー画像 -->
+      <div class="w-full bg-gray-300 rounded-lg overflow-hidden mb-6">
+        <div class="aspect-video flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-400">
+          <div class="text-center text-gray-500">
+            <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p class="text-sm">Step2: ブロックPrefabとステージ構築</p>
+            <p class="text-xs mt-1">（後でスクリーンショットに差し替え）</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="font-bold text-gray-700 mb-4">必要な素材</h3>
+
+        <!-- アセット一覧 -->
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="border rounded-lg p-4">
+            <h4 class="font-bold text-gray-700 mb-2">ブロック画像</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>・block_00.png</li>
+              <li>・block_01.png（バリエーション用）</li>
+            </ul>
+          </div>
+          <div class="border rounded-lg p-4">
+            <h4 class="font-bold text-gray-700 mb-2">スクリプト</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>・StageBuilder.cs</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Prefab作成手順 -->
+        <div class="bg-amber-50 rounded-lg p-4 mb-6">
+          <h4 class="font-bold text-amber-800 mb-3">Prefabの作成方法</h4>
+          <div class="space-y-2 text-sm text-amber-700">
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">1.</span>
+              <p>ブロック画像をシーンにドラッグしてスプライトを作成</p>
+            </div>
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">2.</span>
+              <p>BoxCollider2Dコンポーネントを追加</p>
+            </div>
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">3.</span>
+              <p>Layerを「Ground」に設定</p>
+            </div>
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">4.</span>
+              <p>HierarchyからAssets/Prefabsフォルダにドラッグ → Prefab化完了</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- フォルダ構成 -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h4 class="font-bold text-gray-700 mb-2">Assetsフォルダの構成</h4>
+          <pre class="text-sm text-gray-600 font-mono">Assets/
+├── Prefabs/
+│   └── block_00.prefab    ← 新規作成
+├── Scripts/
+│   └── StageBuilder.cs    ← 新規作成
+└── Sprites/
+    └── Blocks/
+        ├── block_00.png
+        └── block_01.png</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ステージデータの考え方 -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">ステージデータの考え方</h2>
+      <p class="text-gray-600 mb-4">ステージを「マス目」として考え、各マスに何を置くか数字で決めます。</p>
+
+      <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">セルの種類</h3>
+        <div class="grid grid-cols-4 gap-4 text-center">
+          <div class="bg-white p-3 rounded border">
+            <div class="text-2xl mb-1">　</div>
+            <code class="text-blue-600">0</code>
+            <p class="text-sm text-gray-600">空（何もなし）</p>
+          </div>
+          <div class="bg-white p-3 rounded border">
+            <div class="text-2xl mb-1 bg-amber-600 w-8 h-8 mx-auto rounded"></div>
+            <code class="text-blue-600">1</code>
+            <p class="text-sm text-gray-600">ブロック</p>
+          </div>
+          <div class="bg-white p-3 rounded border">
+            <div class="text-2xl mb-1">&#128126;</div>
+            <code class="text-blue-600">2</code>
+            <p class="text-sm text-gray-600">敵</p>
+          </div>
+          <div class="bg-white p-3 rounded border">
+            <div class="text-2xl mb-1">&#11088;</div>
+            <code class="text-blue-600">3</code>
+            <p class="text-sm text-gray-600">アイテム</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ステージ配列の可視化 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">このゲームのステージデータ</h3>
+        <div class="overflow-x-auto">
+          <table class="text-xs border-collapse">
+            <thead>
+              <tr>
+                <th class="p-1 text-gray-500">Y\X</th>
+                <th class="p-1 text-gray-400" colspan="25">0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="p-1 text-gray-500">7</td>
+                <td colspan="25" class="font-mono text-xs">
+                  <span class="text-gray-300">0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</span>
+                  <span class="text-amber-600 font-bold">1 1 1</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-1 text-gray-500">6</td>
+                <td colspan="25" class="font-mono text-xs">
+                  <span class="text-gray-300">0 0 0 0 0 0 0 0</span>
+                  <span class="text-red-500 font-bold">2</span>
+                  <span class="text-gray-300">0 0 0 0 0 0 0 0 0 0 0 0 0 0</span>
+                  <span class="text-yellow-500 font-bold">3</span>
+                  <span class="text-gray-300">0</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-1 text-gray-500">5</td>
+                <td colspan="25" class="font-mono text-xs">
+                  <span class="text-gray-300">0 0 0</span>
+                  <span class="text-amber-600 font-bold">1 1 1</span>
+                  <span class="text-gray-300">0 0 0 0 0 0 0 0 0 0 0 0</span>
+                  <span class="text-amber-600 font-bold">1 1 1</span>
+                  <span class="text-gray-300">0 0 0 0</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-1 text-gray-500">4</td>
+                <td colspan="25" class="font-mono text-xs">
+                  <span class="text-gray-300">0 0 0 0</span>
+                  <span class="text-yellow-500 font-bold">3</span>
+                  <span class="text-gray-300">0 0 0 0 0 0 0 0 0 0 0 0 0 0</span>
+                  <span class="text-yellow-500 font-bold">3</span>
+                  <span class="text-gray-300">0 0 0 0 0</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-1 text-gray-500">3</td>
+                <td colspan="25" class="font-mono text-xs">
+                  <span class="text-gray-300">0 0 0 0 0 0 0 0 0 0 0 0 0 0</span>
+                  <span class="text-amber-600 font-bold">1 1 1</span>
+                  <span class="text-gray-300">0 0 0 0 0 0 0 0</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-1 text-gray-500">2</td>
+                <td colspan="25" class="font-mono text-xs text-gray-300">0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</td>
+              </tr>
+              <tr>
+                <td class="p-1 text-gray-500">1</td>
+                <td colspan="25" class="font-mono text-xs">
+                  <span class="text-amber-600 font-bold">1 1 1 1 1 1 1 1 1 1</span>
+                  <span class="text-gray-300">0 0</span>
+                  <span class="text-amber-600 font-bold">1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-1 text-gray-500">0</td>
+                <td colspan="25" class="font-mono text-xs">
+                  <span class="text-amber-600 font-bold">1 1 1 1 1 1 1 1 1 1</span>
+                  <span class="text-blue-400 font-bold">0 0</span>
+                  <span class="text-amber-600 font-bold">1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">※ X=10,11の位置は穴（落ちるとゲームオーバー）</p>
+      </div>
+    </section>
+
+    <!-- StageBuilder -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">StageBuilder.cs</h2>
+
+      <!-- 配列定義 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">1. ステージデータの定義</h3>
+        <p class="text-gray-600 mb-3">2次元配列でステージを定義します。配列の[y, x]で各マスにアクセスします。</p>
+        <pre><code class="language-csharp">// ステージデータ（0=空、1=ブロック、2=敵、3=アイテム）
+private int[,] stageData = new int[,]
+{
+    // Y=0（一番下の地面）
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+    // Y=1
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+    // Y=2（空間）
+    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    // ... 続く
+};</code></pre>
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
+          <p class="text-yellow-800">
+            <strong>ポイント:</strong> 配列のY=0が画面の「下」になるように作っています。配列を見た目通りに書くとコードが読みやすくなります。
+          </p>
+        </div>
+      </div>
+
+      <!-- ステージ構築 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">2. ステージを構築する</h3>
+        <p class="text-gray-600 mb-3">2重のfor文で配列をスキャンし、各セルの値に応じてPrefabを配置します。</p>
+        <pre><code class="language-csharp">private void BuildStage()
+{
+    int height = stageData.GetLength(0);  // 配列の高さ（行数）
+    int width = stageData.GetLength(1);   // 配列の幅（列数）
+
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            int cellType = stageData[y, x];
+
+            // オフセットを加えた位置を計算
+            Vector3 position = new Vector3(
+                x * blockSize + stageOffset.x,
+                y * blockSize + stageOffset.y,
+                0
+            );
+
+            // セルの種類に応じてオブジェクトを生成
+            switch (cellType)
+            {
+                case 1:  // ブロック
+                    SpawnObject(blockPrefab, position, "Blocks");
+                    break;
+                case 2:  // 敵
+                    SpawnObject(enemyPrefab, position, "Enemies");
+                    break;
+                case 3:  // アイテム
+                    SpawnObject(itemPrefab, position, "Items");
+                    break;
+            }
+        }
+    }
+}</code></pre>
+      </div>
+
+      <!-- オブジェクト生成 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">3. オブジェクトの生成</h3>
+        <p class="text-gray-600 mb-3">Instantiateでプレハブからオブジェクトを生成します。</p>
+        <pre><code class="language-csharp">private void SpawnObject(GameObject prefab, Vector3 position, string parentName)
+{
+    if (prefab == null)
+    {
+        Debug.LogWarning($"Prefabが設定されていません: {parentName}");
+        return;
+    }
+
+    // 親オブジェクトを取得または作成
+    Transform parent = GetOrCreateParent(parentName);
+
+    // Prefabからオブジェクトを生成
+    GameObject obj = Instantiate(prefab, position, Quaternion.identity, parent);
+
+    // わかりやすい名前をつける
+    obj.name = $"{prefab.name}_{position.x}_{position.y}";
+}</code></pre>
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 mt-4">
+          <p class="text-green-800">
+            <strong>Instantiate:</strong> Prefab（テンプレート）からオブジェクトのコピーを作成します。位置、回転、親オブジェクトを指定できます。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- セットアップ手順 -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Unityでのセットアップ</h2>
+
+      <div class="space-y-4">
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">1</div>
+          <div>
+            <h3 class="font-bold text-gray-700">ブロックのPrefabを作成</h3>
+            <p class="text-gray-600">スプライトを配置 → BoxCollider2Dを追加 → Projectにドラッグ＆ドロップでPrefab化</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">2</div>
+          <div>
+            <h3 class="font-bold text-gray-700">Groundレイヤーを設定</h3>
+            <p class="text-gray-600">ブロックPrefabのLayerを「Ground」に設定（接地判定で使用）</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">3</div>
+          <div>
+            <h3 class="font-bold text-gray-700">空のGameObjectを作成</h3>
+            <p class="text-gray-600">Hierarchyで右クリック → Create Empty → 「StageBuilder」と命名</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">4</div>
+          <div>
+            <h3 class="font-bold text-gray-700">StageBuilder.csをアタッチ</h3>
+            <p class="text-gray-600">スクリプトをアタッチし、InspectorでブロックPrefabを設定</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">5</div>
+          <div>
+            <h3 class="font-bold text-gray-700">オフセットを調整</h3>
+            <p class="text-gray-600">stageOffsetでステージの開始位置を調整（プレイヤーの開始位置に合わせる）</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- チャレンジ -->
+    <section class="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-6 mb-8">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">やってみよう！</h2>
+      <p class="text-gray-700 mb-4">stageDataの配列を編集して、オリジナルのステージを作ってみましょう！</p>
+      <ul class="space-y-2 text-gray-600">
+        <li>・穴の位置を変えてみる</li>
+        <li>・ブロックの高さを変えてみる</li>
+        <li>・配列を大きくしてステージを広げる</li>
+      </ul>
+    </section>
+
+    <!-- ナビゲーション -->
+    <div class="flex justify-between items-center">
+      <a href="step1.html" class="text-blue-500 hover:text-blue-700 transition-colors">&larr; Step 1: プレイヤーを動かそう</a>
+      <a href="step3.html" class="bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition-colors font-bold">
+        次へ: 敵とアイテムを追加 &rarr;
+      </a>
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p>Mario Sample - Unity 2D Game Tutorial</p>
+    </div>
+  </footer>
+</body>
+</html>

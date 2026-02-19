@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Step 1: プレイヤーを動かそう - Mario Sample</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- ヘッダー -->
+  <header class="bg-blue-500 text-white py-4 shadow-lg">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <a href="index.html" class="text-white hover:text-blue-200 transition-colors">&larr; トップに戻る</a>
+        <span class="text-sm bg-blue-600 px-3 py-1 rounded">STEP 1 / 4</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Step 1: プレイヤーを動かそう</h1>
+    <p class="text-gray-600 mb-8">キャラクターの移動・ジャンプと、カメラの追従を実装します</p>
+
+    <!-- 学習内容 -->
+    <section class="bg-blue-50 rounded-lg p-6 mb-8">
+      <h2 class="text-xl font-bold text-blue-800 mb-4">このステップで学ぶこと</h2>
+      <ul class="space-y-2 text-blue-700">
+        <li class="flex items-start gap-2">
+          <span class="text-blue-500 mt-1">&#10003;</span>
+          <span>キーボード入力の受け取り方</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-500 mt-1">&#10003;</span>
+          <span>Rigidbody2Dを使った物理的な移動</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-500 mt-1">&#10003;</span>
+          <span>接地判定（地面にいるかどうかのチェック）</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-blue-500 mt-1">&#10003;</span>
+          <span>カメラをプレイヤーに追従させる方法</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 素材準備 -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">素材準備</h2>
+
+      <!-- プレースホルダー画像 -->
+      <div class="w-full bg-gray-300 rounded-lg overflow-hidden mb-6">
+        <div class="aspect-video flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-400">
+          <div class="text-center text-gray-500">
+            <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p class="text-sm">Step1: プレイヤーとカメラの設定画面</p>
+            <p class="text-xs mt-1">（後でスクリーンショットに差し替え）</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="font-bold text-gray-700 mb-4">必要な素材</h3>
+
+        <!-- アセット一覧 -->
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="border rounded-lg p-4">
+            <h4 class="font-bold text-gray-700 mb-2">プレイヤー画像</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>・player1R_0.png（右向き）</li>
+              <li>・player1L_0.png（左向き）</li>
+            </ul>
+          </div>
+          <div class="border rounded-lg p-4">
+            <h4 class="font-bold text-gray-700 mb-2">仮の地面</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>・block_00.png（ブロック画像）</li>
+              <li>・接地テスト用に数個配置</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- フォルダ構成 -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+          <h4 class="font-bold text-gray-700 mb-2">Assetsフォルダの構成</h4>
+          <pre class="text-sm text-gray-600 font-mono">Assets/
+├── Scenes/
+│   └── GameScene.unity
+├── Scripts/
+│   ├── PlayerController.cs
+│   └── CameraFollow.cs
+└── Sprites/
+    └── Player/
+        ├── player1R_0.png
+        └── player1L_0.png</pre>
+        </div>
+
+        <!-- シーンへの配置 -->
+        <div>
+          <h4 class="font-bold text-gray-700 mb-3">シーンへの配置手順</h4>
+          <div class="space-y-3">
+            <div class="flex gap-3 items-start">
+              <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
+              <div>
+                <p class="text-gray-700">Sprites/Playerフォルダにプレイヤー画像をドラッグ＆ドロップ</p>
+              </div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
+              <div>
+                <p class="text-gray-700">画像をHierarchyにドラッグして、シーンにスプライトを配置</p>
+              </div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
+              <div>
+                <p class="text-gray-700">配置したオブジェクトを「Player」にリネームし、Tagも「Player」に設定</p>
+              </div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">4</span>
+              <div>
+                <p class="text-gray-700">テスト用のブロックを数個配置し、Layerを「Ground」に設定</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PlayerController -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">PlayerController.cs</h2>
+      <p class="text-gray-600 mb-4">プレイヤーキャラクターの操作を担当するスクリプトです。</p>
+
+      <!-- 設定値の説明 -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">設定できる値（Inspector）</h3>
+        <div class="grid md:grid-cols-2 gap-4 text-sm">
+          <div class="bg-white p-3 rounded border">
+            <code class="text-blue-600">moveSpeed</code>
+            <p class="text-gray-600 mt-1">移動の速さ（初期値: 5）</p>
+          </div>
+          <div class="bg-white p-3 rounded border">
+            <code class="text-blue-600">jumpForce</code>
+            <p class="text-gray-600 mt-1">ジャンプの強さ（初期値: 10）</p>
+          </div>
+          <div class="bg-white p-3 rounded border">
+            <code class="text-blue-600">groundCheckRadius</code>
+            <p class="text-gray-600 mt-1">接地判定の範囲（初期値: 0.2）</p>
+          </div>
+          <div class="bg-white p-3 rounded border">
+            <code class="text-blue-600">fallThreshold</code>
+            <p class="text-gray-600 mt-1">落下判定のY座標（初期値: -10）</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 移動処理 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">1. 移動の処理</h3>
+        <p class="text-gray-600 mb-3">左右の矢印キーを押すと、プレイヤーが移動します。</p>
+        <pre><code class="language-csharp">private void HandleMovement()
+{
+    float horizontal = 0f;
+
+    // キーボードがあるかチェック
+    if (Keyboard.current != null)
+    {
+        // 左右キーで移動
+        if (Keyboard.current.leftArrowKey.isPressed)
+        {
+            horizontal = -1f;  // 左方向
+        }
+        else if (Keyboard.current.rightArrowKey.isPressed)
+        {
+            horizontal = 1f;   // 右方向
+        }
+    }
+
+    // 移動適用（X方向の速度を設定、Y方向は今のまま）
+    rb.linearVelocity = new Vector2(horizontal * moveSpeed, rb.linearVelocity.y);
+
+    // スプライトの向きを変更
+    if (horizontal != 0 && spriteRenderer != null)
+    {
+        spriteRenderer.flipX = horizontal < 0;
+    }
+}</code></pre>
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
+          <p class="text-yellow-800">
+            <strong>ポイント:</strong> <code>rb.linearVelocity</code>で速度を直接設定しています。Y方向（上下）の速度はそのまま残すことで、ジャンプ中でも自然に動けます。
+          </p>
+        </div>
+      </div>
+
+      <!-- ジャンプ処理 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">2. ジャンプの処理</h3>
+        <p class="text-gray-600 mb-3">上矢印キーを押すと、地面にいるときだけジャンプできます。</p>
+        <pre><code class="language-csharp">private void HandleJump()
+{
+    // 上キーでジャンプ（接地時のみ）
+    if (Keyboard.current != null &&
+        Keyboard.current.upArrowKey.wasPressedThisFrame &&
+        isGrounded)
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+    }
+}</code></pre>
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 mt-4">
+          <p class="text-green-800">
+            <strong>wasPressedThisFrame:</strong> キーが「押された瞬間」だけtrueになります。isPressed（押している間ずっと）と違い、連続ジャンプを防げます。
+          </p>
+        </div>
+      </div>
+
+      <!-- 接地判定 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">3. 接地判定</h3>
+        <p class="text-gray-600 mb-3">プレイヤーの足元に円を描いて、地面と重なっているかチェックします。</p>
+        <pre><code class="language-csharp">private void CheckGround()
+{
+    if (groundCheck != null)
+    {
+        // 足元の位置で円を描き、地面レイヤーと重なるかチェック
+        isGrounded = Physics2D.OverlapCircle(
+            groundCheck.position,
+            groundCheckRadius,
+            groundLayer
+        );
+    }
+}</code></pre>
+        <div class="flex justify-center my-4">
+          <div class="bg-gray-100 p-4 rounded-lg text-center">
+            <div class="w-16 h-24 bg-blue-400 mx-auto rounded relative">
+              <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-8 h-4 border-2 border-green-500 rounded-full bg-green-200 opacity-50"></span>
+            </div>
+            <p class="text-sm text-gray-600 mt-2">足元の緑の円で接地判定</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CameraFollow -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">CameraFollow.cs</h2>
+      <p class="text-gray-600 mb-4">カメラがプレイヤーを追いかけるようにするスクリプトです。</p>
+
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">スムーズな追従</h3>
+        <p class="text-gray-600 mb-3">カメラが急に動くと見づらいので、ゆっくり追いかけるようにします。</p>
+        <pre><code class="language-csharp">void LateUpdate()
+{
+    if (target == null) return;
+
+    // 目標位置を計算（プレイヤー位置 + オフセット）
+    Vector3 desiredPosition = target.position + offset;
+
+    // 制限を適用（カメラが範囲外に行かないように）
+    if (useBounds)
+    {
+        desiredPosition.x = Mathf.Clamp(desiredPosition.x, minX, maxX);
+        desiredPosition.y = Mathf.Clamp(desiredPosition.y, minY, maxY);
+    }
+
+    // スムーズに移動（現在位置から目標位置へ徐々に近づく）
+    Vector3 smoothedPosition = Vector3.Lerp(
+        transform.position,
+        desiredPosition,
+        smoothSpeed * Time.deltaTime
+    );
+
+    transform.position = smoothedPosition;
+}</code></pre>
+        <div class="bg-purple-50 border-l-4 border-purple-400 p-4 mt-4">
+          <p class="text-purple-800">
+            <strong>LateUpdate:</strong> Updateの後に実行されます。プレイヤーが動いた後にカメラを動かすので、ブレが少なくなります。
+          </p>
+        </div>
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-4">
+          <p class="text-blue-800">
+            <strong>Vector3.Lerp:</strong> 2つの位置の間を補間します。smoothSpeedが大きいほど早く追いつきます。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- セットアップ手順 -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Unityでのセットアップ</h2>
+
+      <div class="space-y-4">
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">1</div>
+          <div>
+            <h3 class="font-bold text-gray-700">プレイヤーのスプライトを配置</h3>
+            <p class="text-gray-600">Hierarchyで右クリック → 2D Object → Sprite でスプライトを作成し、画像を設定</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">2</div>
+          <div>
+            <h3 class="font-bold text-gray-700">コンポーネントを追加</h3>
+            <p class="text-gray-600">Rigidbody2D と BoxCollider2D を追加（PlayerControllerをつけると自動で追加されます）</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">3</div>
+          <div>
+            <h3 class="font-bold text-gray-700">PlayerController.csをアタッチ</h3>
+            <p class="text-gray-600">スクリプトをプレイヤーにドラッグ＆ドロップ</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">4</div>
+          <div>
+            <h3 class="font-bold text-gray-700">Ground Layerを設定</h3>
+            <p class="text-gray-600">地面のオブジェクトに「Ground」レイヤーを設定し、PlayerControllerのgroundLayerで選択</p>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">5</div>
+          <div>
+            <h3 class="font-bold text-gray-700">Main CameraにCameraFollowをアタッチ</h3>
+            <p class="text-gray-600">ターゲットにプレイヤーを設定するか、プレイヤーに「Player」タグをつけると自動検出</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ナビゲーション -->
+    <div class="flex justify-between items-center">
+      <a href="index.html" class="text-blue-500 hover:text-blue-700 transition-colors">&larr; トップページ</a>
+      <a href="step2.html" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors font-bold">
+        次へ: ステージを作ろう &rarr;
+      </a>
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p>Mario Sample - Unity 2D Game Tutorial</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,133 +1,183 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | mario-sample</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-  </head>
-  <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mario Sample - Unity 2Dゲーム開発チュートリアル</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .game-placeholder {
+      background: linear-gradient(135deg, #87CEEB 0%, #98D8C8 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- ヘッダー -->
+  <header class="bg-red-600 text-white py-6 shadow-lg">
+    <div class="container mx-auto px-4">
+      <h1 class="text-3xl font-bold text-center">Mario Sample</h1>
+      <p class="text-center mt-2 text-red-100">Unity 2Dゲーム開発チュートリアル</p>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- ゲームセクション -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">完成したゲームをプレイ</h2>
+
+      <div class="max-w-4xl mx-auto">
+        <!-- ゲームプレースホルダー -->
+        <div id="game-container" class="relative rounded-lg overflow-hidden shadow-xl">
+          <div id="game-placeholder" class="game-placeholder aspect-video flex flex-col items-center justify-center cursor-pointer hover:opacity-90 transition-opacity" onclick="loadGame()">
+            <div class="text-center">
+              <div class="w-24 h-24 bg-red-500 rounded-full flex items-center justify-center mb-4 mx-auto shadow-lg hover:bg-red-600 transition-colors">
+                <svg class="w-12 h-12 text-white ml-2" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+              <p class="text-2xl font-bold text-gray-700">クリックしてゲームを開始</p>
+              <p class="text-gray-600 mt-2">矢印キーで移動・ジャンプ</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 操作説明 -->
+        <div class="mt-4 bg-white rounded-lg p-4 shadow">
+          <h3 class="font-bold text-gray-700 mb-2">操作方法</h3>
+          <div class="flex flex-wrap gap-4 text-sm">
+            <div class="flex items-center gap-2">
+              <kbd class="px-2 py-1 bg-gray-200 rounded">←</kbd>
+              <kbd class="px-2 py-1 bg-gray-200 rounded">→</kbd>
+              <span>移動</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <kbd class="px-2 py-1 bg-gray-200 rounded">↑</kbd>
+              <span>ジャンプ</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-yellow-600 font-bold">★</span>
+              <span>アイテムを3つ集めてクリア！</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-logo-title-footer"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">mario-sample</div>
+    </section>
+
+    <!-- 学習ステップ -->
+    <section>
+      <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">4つのステップで学ぶ</h2>
+
+      <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <!-- Step 1 -->
+        <a href="step1.html" class="block bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden group">
+          <div class="bg-blue-500 text-white py-3 px-4">
+            <span class="text-sm font-bold">STEP 1</span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-500 transition-colors">プレイヤーを動かそう</h3>
+            <p class="text-gray-600 mt-2">キャラクターの移動とジャンプ、カメラの追従を実装します。</p>
+            <div class="mt-3 text-sm text-gray-500">
+              <span class="inline-block bg-gray-100 rounded px-2 py-1 mr-2">PlayerController</span>
+              <span class="inline-block bg-gray-100 rounded px-2 py-1">CameraFollow</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Step 2 -->
+        <a href="step2.html" class="block bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden group">
+          <div class="bg-green-500 text-white py-3 px-4">
+            <span class="text-sm font-bold">STEP 2</span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-gray-800 group-hover:text-green-500 transition-colors">ステージを作ろう</h3>
+            <p class="text-gray-600 mt-2">配列データからブロックを自動配置してステージを生成します。</p>
+            <div class="mt-3 text-sm text-gray-500">
+              <span class="inline-block bg-gray-100 rounded px-2 py-1">StageBuilder</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Step 3 -->
+        <a href="step3.html" class="block bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden group">
+          <div class="bg-yellow-500 text-white py-3 px-4">
+            <span class="text-sm font-bold">STEP 3</span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-gray-800 group-hover:text-yellow-500 transition-colors">敵とアイテムを追加</h3>
+            <p class="text-gray-600 mt-2">パトロールする敵と、浮遊するアイテムを実装します。</p>
+            <div class="mt-3 text-sm text-gray-500">
+              <span class="inline-block bg-gray-100 rounded px-2 py-1 mr-2">EnemyController</span>
+              <span class="inline-block bg-gray-100 rounded px-2 py-1">ItemController</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Step 4 -->
+        <a href="step4.html" class="block bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden group">
+          <div class="bg-red-500 text-white py-3 px-4">
+            <span class="text-sm font-bold">STEP 4</span>
+          </div>
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-gray-800 group-hover:text-red-500 transition-colors">ゲームを完成させよう</h3>
+            <p class="text-gray-600 mt-2">ゲーム管理とUI、シーン遷移を実装して完成させます。</p>
+            <div class="mt-3 text-sm text-gray-500">
+              <span class="inline-block bg-gray-100 rounded px-2 py-1 mr-2">GameManager</span>
+              <span class="inline-block bg-gray-100 rounded px-2 py-1">UI Scripts</span>
+            </div>
+          </div>
+        </a>
       </div>
+    </section>
+
+    <!-- プロジェクト情報 -->
+    <section class="mt-12 max-w-4xl mx-auto">
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">このチュートリアルについて</h2>
+        <ul class="space-y-2 text-gray-600">
+          <li>・Unity 6 対応の2Dプラットフォーマーゲームを作ります</li>
+          <li>・全9つのC#スクリプト（約1,000行）で構成されています</li>
+          <li>・各ステップごとに少しずつ機能を追加していきます</li>
+          <li>・小中学生でも理解できるよう、シンプルなコードで解説します</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- フッター -->
+  <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p>Mario Sample - Unity 2D Game Tutorial</p>
+      <p class="mt-2 text-sm">
+        <a href="https://github.com/your-repo/mario-sample" class="hover:text-white transition-colors">GitHub</a>
+      </p>
     </div>
-    <script>
-      var canvas = document.querySelector("#unity-canvas");
+  </footer>
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        var warningBanner = document.querySelector("#unity-warning");
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
-      }
-
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/docs.loader.js";
-      var config = {
-        arguments: [],
-        dataUrl: buildUrl + "/docs.data.unityweb",
-        frameworkUrl: buildUrl + "/docs.framework.js.unityweb",
-        codeUrl: buildUrl + "/docs.wasm.unityweb",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "mario-sample",
-        productVersion: "1.0",
-        showBanner: unityShowBanner,
-        // errorHandler: function(err, url, line) {
-        //    alert("error " + err + " occurred at line " + line);
-        //    // Return 'true' if you handled this error and don't want Unity
-        //    // to process it further, 'false' otherwise.
-        //    return true;
-        // },
+  <script>
+    function loadGame() {
+      const container = document.getElementById('game-container');
+      container.innerHTML = `
+        <iframe
+          id="game-iframe"
+          src="game/index.html"
+          width="100%"
+          style="aspect-ratio: 960/600; border: none;"
+          allowfullscreen>
+        </iframe>
+      `;
+      // iframeにフォーカスを移す
+      const iframe = document.getElementById('game-iframe');
+      iframe.onload = function() {
+        iframe.focus();
+        // iframe内のcanvasにもフォーカスを試みる
+        try {
+          iframe.contentWindow.focus();
+        } catch(e) {}
       };
-
-      // By default, Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      // If you would like all file writes inside Unity Application.persistentDataPath
-      // directory to automatically persist so that the contents are remembered when
-      // the user revisits the site the next time, uncomment the following line:
-      // config.autoSyncPersistentDataPath = true;
-      // This autosyncing is currently not the default behavior to avoid regressing
-      // existing user projects that might rely on the earlier manual
-      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
-      // expected to change.
-
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-        document.querySelector("#unity-container").className = "unity-mobile";
-        canvas.className = "unity-mobile";
-
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
-
-
-      } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
-      }
-
-      document.querySelector("#unity-loading-bar").style.display = "block";
-
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
-
-              }).catch((message) => {
-                alert(message);
-              });
-            };
-
-      document.body.appendChild(script);
-
-    </script>
-  </body>
+      // 即座にもフォーカス
+      iframe.focus();
+    }
+  </script>
+</body>
 </html>

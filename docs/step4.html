@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Step 4: ゲームを完成させよう - Mario Sample</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- ヘッダー -->
+  <header class="bg-red-500 text-white py-4 shadow-lg">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <a href="index.html" class="text-white hover:text-red-200 transition-colors">&larr; トップに戻る</a>
+        <span class="text-sm bg-red-600 px-3 py-1 rounded">STEP 4 / 4</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Step 4: ゲームを完成させよう</h1>
+    <p class="text-gray-600 mb-8">ゲーム管理とUI、シーン遷移を実装して完成させます</p>
+
+    <!-- 学習内容 -->
+    <section class="bg-red-50 rounded-lg p-6 mb-8">
+      <h2 class="text-xl font-bold text-red-800 mb-4">このステップで学ぶこと</h2>
+      <ul class="space-y-2 text-red-700">
+        <li class="flex items-start gap-2">
+          <span class="text-red-500 mt-1">&#10003;</span>
+          <span>シングルトンパターン（1つだけ存在するオブジェクト）</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-red-500 mt-1">&#10003;</span>
+          <span>ゲーム状態の管理（タイトル、プレイ中、ゲームオーバーなど）</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-red-500 mt-1">&#10003;</span>
+          <span>シーン遷移の方法</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-red-500 mt-1">&#10003;</span>
+          <span>UIテキストの更新</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 素材準備 -->
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">素材準備</h2>
+
+      <!-- プレースホルダー画像 -->
+      <div class="w-full bg-gray-300 rounded-lg overflow-hidden mb-6">
+        <div class="aspect-video flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-400">
+          <div class="text-center text-gray-500">
+            <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p class="text-sm">Step4: シーン構成とUI設定</p>
+            <p class="text-xs mt-1">（後でスクリーンショットに差し替え）</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h3 class="font-bold text-gray-700 mb-4">必要な素材</h3>
+
+        <!-- シーン一覧 -->
+        <div class="grid md:grid-cols-2 gap-4 mb-6">
+          <div class="border rounded-lg p-4">
+            <h4 class="font-bold text-gray-700 mb-2">シーンファイル（4つ）</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>・TitleScene.unity</li>
+              <li>・GameScene.unity（既存）</li>
+              <li>・GameOverScene.unity</li>
+              <li>・GameClearScene.unity</li>
+            </ul>
+          </div>
+          <div class="border rounded-lg p-4">
+            <h4 class="font-bold text-gray-700 mb-2">スクリプト</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>・GameManager.cs</li>
+              <li>・GameUI.cs</li>
+              <li>・TitleUI.cs / GameOverUI.cs / GameClearUI.cs</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- シーン作成手順 -->
+        <div class="bg-blue-50 rounded-lg p-4 mb-6">
+          <h4 class="font-bold text-blue-800 mb-3">シーンの作成方法</h4>
+          <div class="space-y-2 text-sm text-blue-700">
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">1.</span>
+              <p>File → New Scene でシーンを作成</p>
+            </div>
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">2.</span>
+              <p>Assets/Scenes フォルダに保存（例: TitleScene）</p>
+            </div>
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">3.</span>
+              <p>File → Build Settings で全シーンを追加（ドラッグ＆ドロップ）</p>
+            </div>
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">4.</span>
+              <p>TitleSceneを一番上（Index 0）に配置</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- UIセットアップ -->
+        <div class="bg-purple-50 rounded-lg p-4 mb-6">
+          <h4 class="font-bold text-purple-800 mb-3">UIのセットアップ</h4>
+          <div class="space-y-2 text-sm text-purple-700">
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">1.</span>
+              <p>Hierarchy → 右クリック → UI → Canvas を作成</p>
+            </div>
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">2.</span>
+              <p>Canvas内 → 右クリック → UI → Text - TextMeshPro を追加</p>
+            </div>
+            <div class="flex gap-2 items-start">
+              <span class="font-bold">3.</span>
+              <p>初回は「Import TMP Essentials」をクリックしてインポート</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- フォルダ構成 -->
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h4 class="font-bold text-gray-700 mb-2">最終的なAssetsフォルダ構成</h4>
+          <pre class="text-sm text-gray-600 font-mono">Assets/
+├── Prefabs/
+│   ├── block_00.prefab
+│   ├── gachagon.prefab
+│   └── item_00.prefab
+├── Scenes/
+│   ├── TitleScene.unity     ← 新規作成
+│   ├── GameScene.unity
+│   ├── GameOverScene.unity  ← 新規作成
+│   └── GameClearScene.unity ← 新規作成
+├── Scripts/
+│   ├── PlayerController.cs
+│   ├── CameraFollow.cs
+│   ├── StageBuilder.cs
+│   ├── EnemyController.cs
+│   ├── ItemController.cs
+│   ├── GameManager.cs      ← 新規作成
+│   ├── GameUI.cs           ← 新規作成
+│   ├── TitleUI.cs          ← 新規作成
+│   ├── GameOverUI.cs       ← 新規作成
+│   └── GameClearUI.cs      ← 新規作成
+└── Sprites/
+    └── ...</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ゲームの流れ -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">ゲームの流れ</h2>
+
+      <div class="flex flex-wrap justify-center gap-4 mb-6">
+        <div class="bg-blue-100 rounded-lg p-4 text-center">
+          <div class="text-2xl mb-1">&#127968;</div>
+          <p class="font-bold text-blue-700">TitleScene</p>
+          <p class="text-xs text-blue-600">タイトル画面</p>
+        </div>
+        <div class="flex items-center text-gray-400">→</div>
+        <div class="bg-green-100 rounded-lg p-4 text-center">
+          <div class="text-2xl mb-1">&#127918;</div>
+          <p class="font-bold text-green-700">GameScene</p>
+          <p class="text-xs text-green-600">ゲームプレイ</p>
+        </div>
+        <div class="flex items-center text-gray-400">→</div>
+        <div class="flex flex-col gap-2">
+          <div class="bg-yellow-100 rounded-lg p-3 text-center">
+            <p class="font-bold text-yellow-700 text-sm">GameClearScene</p>
+          </div>
+          <div class="bg-red-100 rounded-lg p-3 text-center">
+            <p class="font-bold text-red-700 text-sm">GameOverScene</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h3 class="font-bold text-gray-700 mb-2">シーン遷移の条件</h3>
+        <ul class="text-sm text-gray-600 space-y-1">
+          <li>・タイトル → ゲーム: スペースキーを押す</li>
+          <li>・ゲーム → クリア: アイテムを3つ集める</li>
+          <li>・ゲーム → オーバー: 敵に触れる or 穴に落ちる</li>
+          <li>・クリア/オーバー → タイトル: スペースキーを押す</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- GameManager -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">GameManager.cs</h2>
+      <p class="text-gray-600 mb-4">ゲーム全体を管理するマネージャークラスです。</p>
+
+      <!-- シングルトン -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">1. シングルトンパターン</h3>
+        <p class="text-gray-600 mb-3">ゲーム中に1つだけ存在し、どこからでもアクセスできるようにします。</p>
+        <pre><code class="language-csharp">public class GameManager : MonoBehaviour
+{
+    // 静的なインスタンス（クラス全体で共有）
+    public static GameManager Instance { get; private set; }
+
+    void Awake()
+    {
+        // まだインスタンスがなければ、自分をインスタンスにする
+        if (Instance == null)
+        {
+            Instance = this;
+            // シーンが変わっても消えないようにする
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            // すでにあれば、自分を消す（二重生成防止）
+            Destroy(gameObject);
+        }
+    }
+}</code></pre>
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-4">
+          <p class="text-blue-800">
+            <strong>どこからでもアクセス:</strong> <code>GameManager.Instance.メソッド名()</code> で呼び出せます。
+          </p>
+        </div>
+      </div>
+
+      <!-- ゲーム状態 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">2. ゲーム状態の管理</h3>
+        <p class="text-gray-600 mb-3">enumで状態を定義し、現在の状態を保持します。</p>
+        <pre><code class="language-csharp">// ゲームの状態を定義
+public enum GameState
+{
+    Title,      // タイトル画面
+    Playing,    // ゲームプレイ中
+    GameOver,   // ゲームオーバー
+    GameClear   // ゲームクリア
+}
+
+// 現在の状態
+public GameState CurrentState { get; private set; }
+
+// アイテム取得数
+private int itemCount = 0;
+
+// クリアに必要なアイテム数
+[SerializeField]
+private int requiredItemCount = 3;</code></pre>
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 mt-4">
+          <p class="text-green-800">
+            <strong>enum（列挙型）:</strong> 決まった選択肢から1つを選ぶときに使います。数字で管理するより、コードが読みやすくなります。
+          </p>
+        </div>
+      </div>
+
+      <!-- シーン遷移 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">3. シーン遷移</h3>
+        <pre><code class="language-csharp">using UnityEngine.SceneManagement;  // シーン管理に必要
+
+// ゲームを開始する
+public void StartGame()
+{
+    itemCount = 0;  // アイテム数をリセット
+    CurrentState = GameState.Playing;
+    SceneManager.LoadScene("GameScene");
+}
+
+// ゲームオーバーにする
+public void GameOver()
+{
+    CurrentState = GameState.GameOver;
+    SceneManager.LoadScene("GameOverScene");
+}
+
+// ゲームクリアにする
+public void GameClear()
+{
+    CurrentState = GameState.GameClear;
+    SceneManager.LoadScene("GameClearScene");
+}
+
+// タイトルに戻る
+public void ReturnToTitle()
+{
+    itemCount = 0;
+    CurrentState = GameState.Title;
+    SceneManager.LoadScene("TitleScene");
+}</code></pre>
+      </div>
+
+      <!-- アイテム取得 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">4. アイテム取得の処理</h3>
+        <pre><code class="language-csharp">// アイテムを取得した時に呼ばれる
+public void CollectItem()
+{
+    itemCount++;
+    Debug.Log("アイテム取得: " + itemCount + " / " + requiredItemCount);
+
+    // クリア条件を達成したらゲームクリア
+    if (itemCount >= requiredItemCount)
+    {
+        GameClear();
+    }
+}
+
+// UI用：現在のアイテム数を取得
+public int GetItemCount()
+{
+    return itemCount;
+}
+
+// UI用：必要なアイテム数を取得
+public int GetRequiredItemCount()
+{
+    return requiredItemCount;
+}</code></pre>
+      </div>
+
+      <!-- キー入力 -->
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-700 mb-3">5. スペースキーでの画面遷移</h3>
+        <pre><code class="language-csharp">void Update()
+{
+    if (Keyboard.current != null &&
+        Keyboard.current.spaceKey.wasPressedThisFrame)
+    {
+        switch (CurrentState)
+        {
+            case GameState.Title:
+                StartGame();      // タイトル → ゲーム開始
+                break;
+            case GameState.GameOver:
+            case GameState.GameClear:
+                ReturnToTitle();  // 結果画面 → タイトルに戻る
+                break;
+        }
+    }
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- GameUI -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">GameUI.cs</h2>
+      <p class="text-gray-600 mb-4">ゲーム画面のUI（アイテム数表示）を制御します。</p>
+
+      <pre><code class="language-csharp">using TMPro;  // TextMeshProを使うために必要
+
+public class GameUI : MonoBehaviour
+{
+    [SerializeField]
+    private TextMeshProUGUI itemCountText;
+
+    void Update()
+    {
+        UpdateUI();
+    }
+
+    private void UpdateUI()
+    {
+        if (itemCountText != null && GameManager.Instance != null)
+        {
+            int current = GameManager.Instance.GetItemCount();
+            int required = GameManager.Instance.GetRequiredItemCount();
+            itemCountText.text = "ITEMS: " + current + " / " + required;
+        }
+    }
+}</code></pre>
+
+      <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-4">
+        <p class="text-yellow-800">
+          <strong>TextMeshPro:</strong> Unityの高品質なテキスト表示システムです。通常のUI Textより綺麗に表示できます。
+        </p>
+      </div>
+    </section>
+
+    <!-- 各シーンのUI -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">タイトル・結果画面のUI</h2>
+      <p class="text-gray-600 mb-4">TitleUI, GameOverUI, GameClearUI は同じパターンで、テキストの点滅アニメーションを実装しています。</p>
+
+      <pre><code class="language-csharp">public class TitleUI : MonoBehaviour
+{
+    [SerializeField]
+    private TextMeshProUGUI pressSpaceText;
+
+    [SerializeField]
+    private float blinkInterval = 0.5f;  // 点滅間隔
+
+    private float timer = 0f;
+    private bool isVisible = true;
+
+    void Update()
+    {
+        // 点滅アニメーション
+        timer += Time.deltaTime;
+        if (timer >= blinkInterval)
+        {
+            timer = 0f;
+            isVisible = !isVisible;  // 表示/非表示を切り替え
+
+            if (pressSpaceText != null)
+            {
+                pressSpaceText.enabled = isVisible;
+            }
+        }
+    }
+}</code></pre>
+    </section>
+
+    <!-- セットアップ手順 -->
+    <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Unityでのセットアップ</h2>
+
+      <h3 class="font-bold text-gray-700 mb-3">1. シーンを作成</h3>
+      <div class="bg-gray-50 rounded-lg p-4 mb-4">
+        <p class="text-gray-600">以下の4つのシーンを作成し、Build Settingsに追加します：</p>
+        <ul class="mt-2 space-y-1 text-sm text-gray-600">
+          <li>・TitleScene（タイトル画面）</li>
+          <li>・GameScene（メインゲーム）</li>
+          <li>・GameOverScene（ゲームオーバー画面）</li>
+          <li>・GameClearScene（クリア画面）</li>
+        </ul>
+      </div>
+
+      <h3 class="font-bold text-gray-700 mb-3">2. GameManagerを配置</h3>
+      <div class="space-y-3 mb-6">
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
+          <p class="text-gray-600">TitleSceneで空のGameObjectを作成し「GameManager」と命名</p>
+        </div>
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
+          <p class="text-gray-600">GameManager.cs をアタッチ</p>
+        </div>
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
+          <p class="text-gray-600">Required Item Count を設定（デフォルト: 3）</p>
+        </div>
+      </div>
+
+      <h3 class="font-bold text-gray-700 mb-3">3. 各シーンにUIを作成</h3>
+      <div class="space-y-3">
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">1</span>
+          <p class="text-gray-600">Hierarchyで右クリック → UI → Canvas を作成</p>
+        </div>
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">2</span>
+          <p class="text-gray-600">Canvas内に UI → Text - TextMeshPro を追加</p>
+        </div>
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">3</span>
+          <p class="text-gray-600">各シーン用のUIスクリプトをCanvasにアタッチ</p>
+        </div>
+        <div class="flex gap-3 items-start">
+          <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0">4</span>
+          <p class="text-gray-600">InspectorでTextオブジェクトを参照設定</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 完成！ -->
+    <section class="bg-gradient-to-r from-red-100 via-yellow-100 to-green-100 rounded-lg p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">&#127881; おめでとう！ゲーム完成！ &#127881;</h2>
+      <p class="text-gray-700 text-center mb-4">4つのステップを終えて、マリオ風2Dプラットフォーマーが完成しました。</p>
+
+      <div class="bg-white rounded-lg p-4">
+        <h3 class="font-bold text-gray-700 mb-3">これからの発展アイデア</h3>
+        <ul class="space-y-2 text-gray-600">
+          <li class="flex items-start gap-2">
+            <span class="text-green-500">&#9654;</span>
+            <span>ステージを増やして、複数ステージのゲームにする</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-green-500">&#9654;</span>
+            <span>敵を踏んで倒せるようにする</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-green-500">&#9654;</span>
+            <span>BGMと効果音を追加する</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-green-500">&#9654;</span>
+            <span>パワーアップアイテムを追加する</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-green-500">&#9654;</span>
+            <span>タイムリミットを追加する</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ナビゲーション -->
+    <div class="flex justify-between items-center">
+      <a href="step3.html" class="text-yellow-500 hover:text-yellow-700 transition-colors">&larr; Step 3: 敵とアイテムを追加</a>
+      <a href="index.html" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors font-bold">
+        トップページに戻る
+      </a>
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p>Mario Sample - Unity 2D Game Tutorial</p>
+    </div>
+  </footer>
+</body>
+</html>
