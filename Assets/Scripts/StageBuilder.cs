@@ -4,6 +4,7 @@ using UnityEngine;
 /// ステージを構築するクラス
 /// Prefabを使って、配列で指定した位置にブロックを配置する
 /// </summary>
+/// aaaa
 public class StageBuilder : MonoBehaviour
 {
     [Header("Prefab設定")]
