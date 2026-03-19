@@ -1,3 +1,4 @@
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -36,6 +37,8 @@ public class PlayerController : MonoBehaviour
 
     // 状態
     private bool isGrounded = false;
+
+    private Vector3 hoge = null;
 
     void Start()
     {
