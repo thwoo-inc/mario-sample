@@ -1,9 +1,11 @@
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// プレイヤーの操作を制御するクラス
-/// Playerスプライトにアタッチして使用
+/// 【応用編 模範解答】プレイヤーの操作を制御するクラス
+/// 応用1（敵踏みつけ）と応用2（ダブルジャンプ）を含む
+/// ※ このファイルは模範解答です。Unityプロジェクトには含めません。
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(BoxCollider2D))]
@@ -30,12 +32,23 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float fallThreshold = -10f;
 
+    // ===== 応用1: 踏みつけ設定 =====
+    [Header("踏みつけ設定")]
+    [SerializeField]
+    private float stompBounceForce = 8f;  // 踏んだ後の跳ね返り力
+
+    // ===== 応用2: ダブルジャンプ設定 =====
+    [Header("ダブルジャンプ設定")]
+    [SerializeField]
+    private int maxJumpCount = 2;  // 最大ジャンプ回数（2=ダブルジャンプ）
+
     // コンポーネント参照
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
 
     // 状態
     private bool isGrounded = false;
+    private int currentJumpCount = 0;  // 応用2: ジャンプ回数カウント
 
     void Start()
     {
@@ -68,22 +81,30 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// 接地判定を行う
+    /// 接地判定を行う（応用2: 着地時にジャンプ回数リセット）
     /// </summary>
     private void CheckGround()
     {
+        // 前のフレームの接地状態を保存
+        bool wasGrounded = isGrounded;
+
         if (groundCheck != null)
         {
             isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         }
         else
         {
-            // groundCheckが設定されていない場合は、自身の下方向でチェック
             isGrounded = Physics2D.OverlapCircle(
                 transform.position + Vector3.down * 0.5f,
                 groundCheckRadius,
                 groundLayer
             );
+        }
+
+        // 応用2: 着地した瞬間にジャンプ回数をリセット
+        if (!wasGrounded && isGrounded)
+        {
+            currentJumpCount = 0;
         }
     }
 
@@ -94,10 +115,8 @@ public class PlayerController : MonoBehaviour
     {
         float horizontal = 0f;
 
-        // キーボードがあるかチェック
         if (Keyboard.current != null)
         {
-            // 左右キーで移動
             if (Keyboard.current.leftArrowKey.isPressed)
             {
                 horizontal = -1f;
@@ -108,10 +127,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // 移動適用
         rb.linearVelocity = new Vector2(horizontal * moveSpeed, rb.linearVelocity.y);
 
-        // スプライトの向きを変更
         if (horizontal != 0 && spriteRenderer != null)
         {
             spriteRenderer.flipX = horizontal < 0;
@@ -119,14 +136,23 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// ジャンプを処理する
+    /// ジャンプを処理する（応用2: ダブルジャンプ対応）
     /// </summary>
     private void HandleJump()
     {
-        // 上キーでジャンプ（接地時のみ）
-        if (Keyboard.current != null && Keyboard.current.upArrowKey.wasPressedThisFrame && isGrounded)
+        // 応用2: isGrounded の代わりに currentJumpCount < maxJumpCount で判定
+        if (Keyboard.current != null &&
+            Keyboard.current.upArrowKey.wasPressedThisFrame &&
+            currentJumpCount < maxJumpCount)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            currentJumpCount++;
+
+            // 応用5: ジャンプ音を鳴らす
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySE("jump");
+            }
         }
     }
 
@@ -135,7 +161,6 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void CheckFall()
     {
-        // 一定以下に落下したらゲームオーバー
         if (transform.position.y < fallThreshold)
         {
             if (GameManager.Instance != null)
@@ -146,16 +171,42 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// 敵との衝突時の処理
+    /// 敵との衝突時の処理（応用1: 踏みつけ判定を追加）
     /// </summary>
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            // 敵に触れたらゲームオーバー
-            if (GameManager.Instance != null)
+            // 応用1: 衝突点を取得して、上から踏んだか判定
+            float playerBottom = transform.position.y -
+                GetComponent<BoxCollider2D>().bounds.extents.y;
+            float enemyCenter = collision.transform.position.y;
+
+            if (playerBottom > enemyCenter)
             {
-                GameManager.Instance.GameOver();
+                // 踏みつけ成功！
+                EnemyController enemy = collision.gameObject.GetComponent<EnemyController>();
+                if (enemy != null)
+                {
+                    enemy.OnStomped();
+                }
+
+                // プレイヤーが少し跳ねる
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, stompBounceForce);
+
+                // 応用5: 踏みつけ音
+                if (SoundManager.Instance != null)
+                {
+                    SoundManager.Instance.PlaySE("stomp");
+                }
+            }
+            else
+            {
+                // 横から当たった → ゲームオーバー
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.GameOver();
+                }
             }
         }
     }
@@ -167,7 +218,6 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Item"))
         {
-            // アイテムを取得
             if (GameManager.Instance != null)
             {
                 GameManager.Instance.CollectItem();

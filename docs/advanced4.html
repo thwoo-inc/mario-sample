@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>応用4: スコアとタイマー - Mario Sample</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <!-- ヘッダー -->
+    <header class="bg-amber-500 text-white py-4 shadow-lg">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <a
+            href="advanced.html"
+            class="text-white hover:text-amber-200 transition-colors"
+            >&larr; 応用編に戻る</a
+          >
+          <span class="text-sm bg-amber-600 px-3 py-1 rounded">応用 4</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">
+        応用4: スコアとタイマー
+      </h1>
+      <p class="text-gray-600 mb-8">
+        スコアシステムと制限時間を追加して、ゲーム性を高めます
+      </p>
+
+      <!-- 学習内容 -->
+      <section class="bg-amber-50 rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-bold text-amber-800 mb-4">
+          この応用で学ぶこと
+        </h2>
+        <ul class="space-y-2 text-amber-700">
+          <li class="flex items-start gap-2">
+            <span class="text-amber-500 mt-1">&#10003;</span>
+            <span>Time.deltaTimeを使ったカウントダウンタイマー</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-amber-500 mt-1">&#10003;</span>
+            <span>スコアの加算と表示</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-amber-500 mt-1">&#10003;</span>
+            <span>文字列フォーマット（数値の表示方法）</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-amber-500 mt-1">&#10003;</span>
+            <span>Mathf.CeilToIntで切り上げ</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 仕組みの説明 -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">仕組みを考えよう</h2>
+
+        <div class="flex justify-center my-6">
+          <div class="bg-gray-800 text-white p-4 rounded-lg font-mono text-sm">
+            <div class="flex justify-between gap-8">
+              <span>SCORE: <span class="text-yellow-400">1500</span></span>
+              <span>ITEMS: <span class="text-green-400">2 / 3</span></span>
+              <span>TIME: <span class="text-red-400">042</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="bg-yellow-50 rounded-lg p-4">
+            <h4 class="font-bold text-yellow-700 mb-2">スコア</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>・アイテム取得: +100点</li>
+              <li>・敵を踏む: +200点（応用1と組合せ）</li>
+              <li>・クリアボーナス: 残り時間 x 10点</li>
+            </ul>
+          </div>
+          <div class="bg-red-50 rounded-lg p-4">
+            <h4 class="font-bold text-red-700 mb-2">タイマー</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>・制限時間からカウントダウン</li>
+              <li>・毎フレームTime.deltaTimeを引く</li>
+              <li>・0になったらゲームオーバー</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-4">
+          <p class="text-blue-800">
+            <strong>Time.deltaTime:</strong>
+            前のフレームから経過した秒数です。毎フレーム引き算すると正確なカウントダウンができます。例えば60FPSなら約0.0167秒ずつ引かれます。
+          </p>
+        </div>
+      </section>
+
+      <!-- 変更するファイル -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">変更するファイル</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+            <h3 class="font-bold text-blue-700">GameManager.cs</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              スコア管理とタイマー処理を追加
+            </p>
+          </div>
+          <div class="border-2 border-green-200 rounded-lg p-4 bg-green-50">
+            <h3 class="font-bold text-green-700">GameUI.cs</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              スコアとタイマーの表示を追加
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 自分で考えるヒント -->
+      <section class="bg-yellow-50 rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-yellow-800 mb-4">
+          自分で考えてみよう
+        </h2>
+        <div class="space-y-4 text-yellow-700">
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >1</span
+            >
+            <p>
+              GameManagerにスコア用のint変数と、タイマー用のfloat変数を追加しよう
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >2</span
+            >
+            <p>
+              Updateの中で
+              <code>remainingTime -= Time.deltaTime</code>
+              するとカウントダウンになるよ
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >3</span
+            >
+            <p>タイマーが0以下になったらGameOver()を呼ぼう</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 模範解答 -->
+      <section class="mb-8">
+        <details class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <summary
+            class="cursor-pointer p-6 hover:bg-gray-50 transition-colors"
+          >
+            <span class="text-2xl font-bold text-gray-800">模範解答を見る</span>
+            <span class="text-gray-500 ml-2 text-sm"
+              >（まず自分で考えてから開こう！）</span
+            >
+          </summary>
+
+          <div class="p-6 border-t">
+            <!-- GameManager変更点 -->
+            <h3 class="text-xl font-bold text-blue-700 mb-3">
+              GameManager.cs の変更
+            </h3>
+
+            <div class="mb-4">
+              <h4 class="font-bold text-gray-700 mb-2">追加する変数</h4>
+              <pre><code class="language-csharp">[Header("スコア設定")]
+[SerializeField]
+private int scorePerItem = 100;      // アイテム1個あたりのスコア
+
+[SerializeField]
+private int scorePerStomp = 200;     // 敵踏みつけのスコア
+
+[SerializeField]
+private int timeBonus = 10;          // 残り時間1秒あたりのボーナス
+
+[Header("タイマー設定")]
+[SerializeField]
+private float timeLimit = 60f;       // 制限時間（秒）
+
+// スコアとタイマー
+private int score = 0;
+private float remainingTime;</code></pre>
+            </div>
+
+            <div class="mb-4">
+              <h4 class="font-bold text-gray-700 mb-2">StartGame()の変更</h4>
+              <pre><code class="language-csharp">public void StartGame()
+{
+    itemCount = 0;
+    score = 0;                         // スコアをリセット
+    remainingTime = timeLimit;         // タイマーをリセット
+    CurrentState = GameState.Playing;
+    SceneManager.LoadScene("GameScene");
+}</code></pre>
+            </div>
+
+            <div class="mb-4">
+              <h4 class="font-bold text-gray-700 mb-2">
+                Update()にタイマー処理を追加
+              </h4>
+              <pre><code class="language-csharp">void Update()
+{
+    // タイマー処理（プレイ中のみ）
+    if (CurrentState == GameState.Playing)
+    {
+        remainingTime -= Time.deltaTime;
+        if (remainingTime <= 0f)
+        {
+            remainingTime = 0f;
+            GameOver();  // 時間切れ！
+            return;
+        }
+    }
+
+    // スペースキー入力の処理（既存のコード）
+    if (Keyboard.current != null &&
+        Keyboard.current.spaceKey.wasPressedThisFrame)
+    {
+        // ... 既存の処理 ...
+    }
+}</code></pre>
+            </div>
+
+            <div class="mb-4">
+              <h4 class="font-bold text-gray-700 mb-2">CollectItem()の変更</h4>
+              <pre><code class="language-csharp">public void CollectItem()
+{
+    itemCount++;
+    score += scorePerItem;  // スコア加算
+    Debug.Log("スコア: " + score +
+              " アイテム: " + itemCount + " / " + requiredItemCount);
+
+    if (itemCount >= requiredItemCount)
+    {
+        // クリアボーナス: 残り時間 × timeBonus
+        int bonus = Mathf.CeilToInt(remainingTime) * timeBonus;
+        score += bonus;
+        GameClear();
+    }
+}</code></pre>
+            </div>
+
+            <div class="mb-4">
+              <h4 class="font-bold text-gray-700 mb-2">
+                スコア関連のメソッドを追加
+              </h4>
+              <pre><code class="language-csharp">/// &lt;summary&gt;
+/// スコアを加算する（敵を倒した時など）
+/// &lt;/summary&gt;
+public void AddScore(int points)
+{
+    score += points;
+}
+
+/// &lt;summary&gt;
+/// 現在のスコアを取得
+/// &lt;/summary&gt;
+public int GetScore()
+{
+    return score;
+}
+
+/// &lt;summary&gt;
+/// 残り時間を取得
+/// &lt;/summary&gt;
+public float GetRemainingTime()
+{
+    return remainingTime;
+}</code></pre>
+            </div>
+
+            <!-- GameUI変更点 -->
+            <h3 class="text-xl font-bold text-green-700 mb-3 mt-8">
+              GameUI.cs の変更
+            </h3>
+
+            <div class="mb-4">
+              <h4 class="font-bold text-gray-700 mb-2">追加する変数</h4>
+              <pre><code class="language-csharp">[SerializeField]
+private TextMeshProUGUI scoreText;    // スコア表示用
+
+[SerializeField]
+private TextMeshProUGUI timerText;    // タイマー表示用</code></pre>
+            </div>
+
+            <div class="mb-6">
+              <h4 class="font-bold text-gray-700 mb-2">Update()の変更</h4>
+              <pre><code class="language-csharp">void Update()
+{
+    if (GameManager.Instance == null) return;
+
+    // アイテム表示（既存）
+    if (itemText != null)
+    {
+        itemText.text = "ITEMS: " +
+            GameManager.Instance.GetItemCount() + " / " +
+            GameManager.Instance.GetRequiredItemCount();
+    }
+
+    // スコア表示
+    if (scoreText != null)
+    {
+        scoreText.text = "SCORE: " +
+            GameManager.Instance.GetScore();
+    }
+
+    // タイマー表示
+    if (timerText != null)
+    {
+        // 残り時間を整数に切り上げて表示
+        int timeInt = Mathf.CeilToInt(
+            GameManager.Instance.GetRemainingTime());
+        timerText.text = "TIME: " + timeInt;
+
+        // 残り10秒以下は赤くする
+        if (timeInt <= 10)
+        {
+            timerText.color = Color.red;
+        }
+        else
+        {
+            timerText.color = Color.white;
+        }
+    }
+}</code></pre>
+            </div>
+
+            <!-- 解説 -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
+              <h4 class="font-bold text-blue-800 mb-2">解説</h4>
+              <ul class="text-blue-700 space-y-1 text-sm">
+                <li>
+                  ・<code>Time.deltaTime</code>
+                  は前のフレームからの経過秒数（例: 60FPSなら約0.0167秒）
+                </li>
+                <li>
+                  ・<code>Mathf.CeilToInt()</code>
+                  は小数を整数に切り上げます（59.1 → 60）
+                </li>
+                <li>・タイマーが残り10秒以下で赤くなると、緊張感が出ます！</li>
+                <li>
+                  ・クリアボーナスで「速くクリアするほど高得点」というゲーム性が生まれます
+                </li>
+              </ul>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- Unityでの設定 -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Unityでの設定</h2>
+        <div class="space-y-3">
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >1</span
+            >
+            <p class="text-gray-600">
+              GameSceneのCanvasにTextMeshProを2つ追加（スコア用・タイマー用）
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >2</span
+            >
+            <p class="text-gray-600">
+              画面の左上にスコア、右上にタイマーを配置（Anchorを設定）
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >3</span
+            >
+            <p class="text-gray-600">
+              GameUIのInspectorで各TextMeshProをドラッグして設定
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >4</span
+            >
+            <p class="text-gray-600">
+              GameManagerで<code class="bg-gray-100 px-1 rounded"
+                >Time Limit</code
+              >を調整（60秒くらいからスタート）
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- チャレンジ -->
+      <section
+        class="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg shadow-lg p-6 mb-8"
+      >
+        <h2 class="text-xl font-bold text-gray-800 mb-3">追加チャレンジ</h2>
+        <ul class="space-y-2 text-gray-600 text-sm">
+          <li>・ゲームクリア画面にスコアを表示してみよう</li>
+          <li>・ハイスコアをPlayerPrefsで保存してみよう</li>
+          <li>
+            ・残り時間が少なくなるとBGMの速度が速くなるようにしてみよう（応用5と組合せ）
+          </li>
+        </ul>
+      </section>
+
+      <!-- ナビゲーション -->
+      <div class="flex justify-between items-center">
+        <a
+          href="advanced3.html"
+          class="text-emerald-500 hover:text-emerald-700 transition-colors"
+          >&larr; 応用3: 動く足場</a
+        >
+        <a
+          href="advanced5.html"
+          class="bg-pink-500 text-white px-6 py-3 rounded-lg hover:bg-pink-600 transition-colors font-bold"
+        >
+          次へ: BGMと効果音 &rarr;
+        </a>
+      </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+      <div class="container mx-auto px-4 text-center">
+        <p>Mario Sample - Unity 2D Game Tutorial</p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>応用5: BGMと効果音 - Mario Sample</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <!-- ヘッダー -->
+    <header class="bg-pink-500 text-white py-4 shadow-lg">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <a
+            href="advanced.html"
+            class="text-white hover:text-pink-200 transition-colors"
+            >&larr; 応用編に戻る</a
+          >
+          <span class="text-sm bg-pink-600 px-3 py-1 rounded">応用 5</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">応用5: BGMと効果音</h1>
+      <p class="text-gray-600 mb-8">音を追加してゲームをもっと楽しくしよう！</p>
+
+      <!-- 学習内容 -->
+      <section class="bg-pink-50 rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-bold text-pink-800 mb-4">この応用で学ぶこと</h2>
+        <ul class="space-y-2 text-pink-700">
+          <li class="flex items-start gap-2">
+            <span class="text-pink-500 mt-1">&#10003;</span>
+            <span>AudioSourceとAudioClipの使い方</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-pink-500 mt-1">&#10003;</span>
+            <span>BGM（ループ再生）と効果音（1回再生）の違い</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-pink-500 mt-1">&#10003;</span>
+            <span>シングルトンで音を一元管理する方法</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-pink-500 mt-1">&#10003;</span>
+            <span>PlayOneShot()で複数の音を重ねて再生</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 仕組みの説明 -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">仕組みを考えよう</h2>
+
+        <div class="grid md:grid-cols-2 gap-6 my-6">
+          <div class="bg-purple-50 rounded-lg p-4">
+            <h4 class="font-bold text-purple-700 mb-3">
+              BGM（バックグラウンドミュージック）
+            </h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>・ゲーム中ずっと流れる音楽</li>
+              <li>・<code>loop = true</code> で繰り返し再生</li>
+              <li>・AudioSourceの<code>Play()</code>で開始</li>
+              <li>・シーンごとに違うBGMを流せる</li>
+            </ul>
+          </div>
+          <div class="bg-blue-50 rounded-lg p-4">
+            <h4 class="font-bold text-blue-700 mb-3">効果音（SE）</h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>・アクション時に1回だけ鳴る音</li>
+              <li>・<code>PlayOneShot()</code>で再生</li>
+              <li>・同時に複数鳴らせる</li>
+              <li>・例: ジャンプ、アイテム取得、ゲームオーバー</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+          <p class="text-blue-800">
+            <strong>ポイント:</strong>
+            SoundManagerというシングルトンを作り、どこからでも
+            <code>SoundManager.Instance.PlaySE("jump")</code>
+            のように呼び出せるようにします。GameManagerと同じパターンです！
+          </p>
+        </div>
+      </section>
+
+      <!-- 音素材について -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">音素材の準備</h2>
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+          <p class="text-yellow-800">
+            <strong>注意:</strong>
+            音素材はフリー素材サイトからダウンロードしましょう。「フリー
+            効果音」で検索すると見つかります。.wav や .mp3
+            ファイルをAssetsフォルダにドラッグするだけでUnityに取り込めます。
+          </p>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <h4 class="font-bold text-gray-700 mb-2">用意する音素材</h4>
+          <pre class="text-sm text-gray-600 font-mono">
+Assets/
+└── Audio/
+    ├── BGM/
+    │   ├── bgm_game.wav      ← ゲーム中のBGM
+    │   └── bgm_title.wav     ← タイトル画面のBGM
+    └── SE/
+        ├── se_jump.wav        ← ジャンプ音
+        ├── se_item.wav        ← アイテム取得音
+        ├── se_stomp.wav       ← 敵を踏む音
+        ├── se_gameover.wav    ← ゲームオーバー音
+        └── se_clear.wav       ← クリア音</pre
+          >
+        </div>
+      </section>
+
+      <!-- 変更・追加するファイル -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">
+          変更・追加するファイル
+        </h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="border-2 border-purple-200 rounded-lg p-4 bg-purple-50">
+            <h3 class="font-bold text-purple-700">
+              SoundManager.cs
+              <span class="text-sm font-normal text-gray-500">新規作成</span>
+            </h3>
+            <p class="text-sm text-gray-600 mt-1">
+              BGMと効果音を一元管理するシングルトン
+            </p>
+          </div>
+          <div class="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+            <h3 class="font-bold text-blue-700">
+              各スクリプト
+              <span class="text-sm font-normal text-gray-500">変更</span>
+            </h3>
+            <p class="text-sm text-gray-600 mt-1">
+              適切なタイミングで音を鳴らすコードを追加
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 自分で考えるヒント -->
+      <section class="bg-yellow-50 rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-yellow-800 mb-4">
+          自分で考えてみよう
+        </h2>
+        <div class="space-y-4 text-yellow-700">
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >1</span
+            >
+            <p>
+              GameManagerのシングルトンパターンを思い出して、SoundManagerも同じように作ってみよう
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >2</span
+            >
+            <p>
+              BGMはループ再生、効果音は1回再生。AudioSourceの設定でどう切り替える？
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >3</span
+            >
+            <p>
+              PlayerControllerのジャンプ処理の中に、音を鳴らすコードを1行追加してみよう
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 模範解答 -->
+      <section class="mb-8">
+        <details class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <summary
+            class="cursor-pointer p-6 hover:bg-gray-50 transition-colors"
+          >
+            <span class="text-2xl font-bold text-gray-800">模範解答を見る</span>
+            <span class="text-gray-500 ml-2 text-sm"
+              >（まず自分で考えてから開こう！）</span
+            >
+          </summary>
+
+          <div class="p-6 border-t">
+            <!-- SoundManager.cs -->
+            <h3 class="text-xl font-bold text-purple-700 mb-3">
+              SoundManager.cs（新規作成）
+            </h3>
+            <pre><code class="language-csharp">using UnityEngine;
+
+/// &lt;summary&gt;
+/// BGMと効果音を管理するクラス
+/// EmptyObjectにアタッチして使用
+/// &lt;/summary&gt;
+public class SoundManager : MonoBehaviour
+{
+    // シングルトンインスタンス
+    public static SoundManager Instance { get; private set; }
+
+    [Header("BGM")]
+    [SerializeField]
+    private AudioClip bgmTitle;       // タイトルBGM
+
+    [SerializeField]
+    private AudioClip bgmGame;        // ゲームBGM
+
+    [Header("効果音")]
+    [SerializeField]
+    private AudioClip seJump;         // ジャンプ音
+
+    [SerializeField]
+    private AudioClip seItem;         // アイテム取得音
+
+    [SerializeField]
+    private AudioClip seStomp;        // 踏みつけ音
+
+    [SerializeField]
+    private AudioClip seGameOver;     // ゲームオーバー音
+
+    [SerializeField]
+    private AudioClip seClear;        // クリア音
+
+    [Header("音量設定")]
+    [SerializeField]
+    private float bgmVolume = 0.5f;   // BGM音量
+
+    [SerializeField]
+    private float seVolume = 1.0f;    // 効果音音量
+
+    // AudioSourceコンポーネント
+    private AudioSource bgmSource;    // BGM用
+    private AudioSource seSource;     // 効果音用
+
+    void Awake()
+    {
+        // シングルトンパターン（GameManagerと同じ！）
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            SetupAudioSources();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    /// &lt;summary&gt;
+    /// AudioSourceを2つ作成（BGM用と効果音用）
+    /// &lt;/summary&gt;
+    private void SetupAudioSources()
+    {
+        // BGM用のAudioSource
+        bgmSource = gameObject.AddComponent&lt;AudioSource&gt;();
+        bgmSource.loop = true;        // ループ再生
+        bgmSource.volume = bgmVolume;
+        bgmSource.playOnAwake = false;
+
+        // 効果音用のAudioSource
+        seSource = gameObject.AddComponent&lt;AudioSource&gt;();
+        seSource.loop = false;        // ループしない
+        seSource.volume = seVolume;
+        seSource.playOnAwake = false;
+    }
+
+    /// &lt;summary&gt;
+    /// BGMを再生する
+    /// &lt;/summary&gt;
+    public void PlayBGM(string bgmName)
+    {
+        AudioClip clip = null;
+
+        switch (bgmName)
+        {
+            case "title":
+                clip = bgmTitle;
+                break;
+            case "game":
+                clip = bgmGame;
+                break;
+        }
+
+        if (clip != null && bgmSource.clip != clip)
+        {
+            bgmSource.clip = clip;
+            bgmSource.Play();
+        }
+    }
+
+    /// &lt;summary&gt;
+    /// BGMを停止する
+    /// &lt;/summary&gt;
+    public void StopBGM()
+    {
+        bgmSource.Stop();
+    }
+
+    /// &lt;summary&gt;
+    /// 効果音を再生する
+    /// &lt;/summary&gt;
+    public void PlaySE(string seName)
+    {
+        AudioClip clip = null;
+
+        switch (seName)
+        {
+            case "jump":
+                clip = seJump;
+                break;
+            case "item":
+                clip = seItem;
+                break;
+            case "stomp":
+                clip = seStomp;
+                break;
+            case "gameover":
+                clip = seGameOver;
+                break;
+            case "clear":
+                clip = seClear;
+                break;
+        }
+
+        if (clip != null)
+        {
+            // PlayOneShotは同時に複数の音を鳴らせる
+            seSource.PlayOneShot(clip, seVolume);
+        }
+    }
+}</code></pre>
+
+            <!-- 各スクリプトへの追加 -->
+            <h3 class="text-xl font-bold text-blue-700 mb-3 mt-8">
+              各スクリプトに追加するコード
+            </h3>
+            <p class="text-gray-600 mb-3">該当する場所に1行追加するだけ！</p>
+
+            <div class="space-y-4">
+              <div class="bg-blue-50 rounded-lg p-4">
+                <h4 class="font-bold text-blue-700 mb-2">
+                  PlayerController.cs - HandleJump()
+                </h4>
+                <pre><code class="language-csharp">private void HandleJump()
+{
+    if (Keyboard.current != null &&
+        Keyboard.current.upArrowKey.wasPressedThisFrame &&
+        isGrounded)
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+
+        // ジャンプ音を鳴らす ← 追加！
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySE("jump");
+        }
+    }
+}</code></pre>
+              </div>
+
+              <div class="bg-green-50 rounded-lg p-4">
+                <h4 class="font-bold text-green-700 mb-2">
+                  GameManager.cs - CollectItem()
+                </h4>
+                <pre><code class="language-csharp">public void CollectItem()
+{
+    itemCount++;
+
+    // アイテム取得音 ← 追加！
+    if (SoundManager.Instance != null)
+    {
+        SoundManager.Instance.PlaySE("item");
+    }
+
+    if (itemCount >= requiredItemCount)
+    {
+        GameClear();
+    }
+}</code></pre>
+              </div>
+
+              <div class="bg-red-50 rounded-lg p-4">
+                <h4 class="font-bold text-red-700 mb-2">
+                  GameManager.cs - GameOver() / GameClear()
+                </h4>
+                <pre><code class="language-csharp">public void GameOver()
+{
+    CurrentState = GameState.GameOver;
+
+    // BGM停止 & ゲームオーバー音 ← 追加！
+    if (SoundManager.Instance != null)
+    {
+        SoundManager.Instance.StopBGM();
+        SoundManager.Instance.PlaySE("gameover");
+    }
+
+    SceneManager.LoadScene("GameOverScene");
+}
+
+public void GameClear()
+{
+    CurrentState = GameState.GameClear;
+
+    // BGM停止 & クリア音 ← 追加！
+    if (SoundManager.Instance != null)
+    {
+        SoundManager.Instance.StopBGM();
+        SoundManager.Instance.PlaySE("clear");
+    }
+
+    SceneManager.LoadScene("GameClearScene");
+}</code></pre>
+              </div>
+
+              <div class="bg-purple-50 rounded-lg p-4">
+                <h4 class="font-bold text-purple-700 mb-2">
+                  GameManager.cs - StartGame() / UpdateStateFromScene()
+                </h4>
+                <pre><code class="language-csharp">public void StartGame()
+{
+    itemCount = 0;
+    CurrentState = GameState.Playing;
+
+    // ゲームBGMを再生 ← 追加！
+    if (SoundManager.Instance != null)
+    {
+        SoundManager.Instance.PlayBGM("game");
+    }
+
+    SceneManager.LoadScene("GameScene");
+}
+
+private void UpdateStateFromScene()
+{
+    string sceneName = SceneManager.GetActiveScene().name;
+    // ... 既存の処理 ...
+
+    // タイトルならタイトルBGMを再生 ← 追加！
+    if (sceneName == "TitleScene" &&
+        SoundManager.Instance != null)
+    {
+        SoundManager.Instance.PlayBGM("title");
+    }
+}</code></pre>
+              </div>
+            </div>
+
+            <!-- 解説 -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
+              <h4 class="font-bold text-blue-800 mb-2">解説</h4>
+              <ul class="text-blue-700 space-y-1 text-sm">
+                <li>
+                  ・<code>AudioSource</code>
+                  は音を再生するためのコンポーネントです。BGM用と効果音用の2つを作ります
+                </li>
+                <li>
+                  ・<code>loop = true</code> にするとBGMが繰り返し再生されます
+                </li>
+                <li>
+                  ・<code>PlayOneShot()</code>
+                  は効果音の再生に使います。同時に複数の音を重ねられます
+                </li>
+                <li>
+                  ・<code>bgmSource.clip != clip</code>
+                  のチェックで、同じBGMが二重再生されるのを防ぎます
+                </li>
+                <li>
+                  ・GameManagerと同じシングルトンなので、どのスクリプトからでも呼び出せます
+                </li>
+              </ul>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- Unityでの設定 -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Unityでの設定</h2>
+        <div class="space-y-3">
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >1</span
+            >
+            <p class="text-gray-600">
+              Assets内に<code class="bg-gray-100 px-1 rounded">Audio/BGM</code
+              >と<code class="bg-gray-100 px-1 rounded">Audio/SE</code
+              >フォルダを作成
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >2</span
+            >
+            <p class="text-gray-600">
+              フリー音源をダウンロードしてフォルダに配置
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >3</span
+            >
+            <p class="text-gray-600">
+              空のGameObjectを作成し「SoundManager」と名前をつける
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >4</span
+            >
+            <p class="text-gray-600">SoundManager.csをアタッチ</p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >5</span
+            >
+            <p class="text-gray-600">
+              Inspectorで各AudioClipスロットに音源ファイルをドラッグ
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-pink-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >6</span
+            >
+            <p class="text-gray-600">
+              TitleSceneに配置（DontDestroyOnLoadで全シーンで使えます）
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- チャレンジ -->
+      <section
+        class="bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg shadow-lg p-6 mb-8"
+      >
+        <h2 class="text-xl font-bold text-gray-800 mb-3">追加チャレンジ</h2>
+        <ul class="space-y-2 text-gray-600 text-sm">
+          <li>
+            ・設定画面を作って、BGMと効果音の音量を別々に調整できるようにしよう
+          </li>
+          <li>・足音をつけてみよう（移動中だけ定期的に鳴らす）</li>
+          <li>
+            ・BGMをフェードイン・フェードアウトさせてみよう（Lerp関数を使う）
+          </li>
+        </ul>
+      </section>
+
+      <!-- ナビゲーション -->
+      <div class="flex justify-between items-center">
+        <a
+          href="advanced4.html"
+          class="text-amber-500 hover:text-amber-700 transition-colors"
+          >&larr; 応用4: スコアとタイマー</a
+        >
+        <a
+          href="advanced.html"
+          class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition-colors font-bold"
+        >
+          応用一覧に戻る
+        </a>
+      </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+      <div class="container mx-auto px-4 text-center">
+        <p>Mario Sample - Unity 2D Game Tutorial</p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>応用1: 敵を踏んで倒す - Mario Sample</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <!-- ヘッダー -->
+    <header class="bg-orange-500 text-white py-4 shadow-lg">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <a
+            href="advanced.html"
+            class="text-white hover:text-orange-200 transition-colors"
+            >&larr; 応用編に戻る</a
+          >
+          <span class="text-sm bg-orange-600 px-3 py-1 rounded">応用 1</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">
+        応用1: 敵を踏んで倒す
+      </h1>
+      <p class="text-gray-600 mb-8">
+        マリオのように、敵の上からジャンプして踏みつけると倒せるようにします
+      </p>
+
+      <!-- 学習内容 -->
+      <section class="bg-orange-50 rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-bold text-orange-800 mb-4">
+          この応用で学ぶこと
+        </h2>
+        <ul class="space-y-2 text-orange-700">
+          <li class="flex items-start gap-2">
+            <span class="text-orange-500 mt-1">&#10003;</span>
+            <span>衝突の方向を判定する方法（上から？横から？）</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-orange-500 mt-1">&#10003;</span>
+            <span>ContactPoint2Dで衝突点を取得する</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-orange-500 mt-1">&#10003;</span>
+            <span>敵を倒した時のバウンド（跳ね返り）処理</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 仕組みの説明 -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">仕組みを考えよう</h2>
+
+        <div class="flex justify-center my-6">
+          <div class="bg-gray-100 p-6 rounded-lg">
+            <div class="flex gap-12 items-end">
+              <!-- 踏む場合 -->
+              <div class="text-center">
+                <div
+                  class="w-10 h-10 bg-blue-400 rounded mx-auto mb-1 flex items-center justify-center text-white text-xs"
+                >
+                  P
+                </div>
+                <div class="text-gray-400 text-xs mb-1">&darr; 落下中</div>
+                <div
+                  class="w-12 h-10 bg-red-400 rounded mx-auto flex items-center justify-center text-white text-xs"
+                >
+                  敵
+                </div>
+                <p class="text-sm text-green-600 font-bold mt-2">倒せる！</p>
+              </div>
+              <!-- 横からの場合 -->
+              <div class="text-center">
+                <div class="flex items-center gap-1">
+                  <div
+                    class="w-10 h-10 bg-blue-400 rounded flex items-center justify-center text-white text-xs"
+                  >
+                    P
+                  </div>
+                  <div class="text-gray-400 text-xs">&rarr;</div>
+                  <div
+                    class="w-12 h-10 bg-red-400 rounded flex items-center justify-center text-white text-xs"
+                  >
+                    敵
+                  </div>
+                </div>
+                <p class="text-sm text-red-600 font-bold mt-2">
+                  ゲームオーバー
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+          <p class="text-blue-800">
+            <strong>ポイント:</strong>
+            衝突した位置を見て、プレイヤーが敵の「上」にいるかどうかを判定します。プレイヤーの足元が敵の頭より上にあれば「踏んだ」と判断します。
+          </p>
+        </div>
+      </section>
+
+      <!-- 変更するファイル -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">変更するファイル</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+            <h3 class="font-bold text-blue-700">PlayerController.cs</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              OnCollisionEnter2Dを修正して、踏みつけ判定を追加
+            </p>
+          </div>
+          <div class="border-2 border-green-200 rounded-lg p-4 bg-green-50">
+            <h3 class="font-bold text-green-700">EnemyController.cs</h3>
+            <p class="text-sm text-gray-600 mt-1">
+              倒された時の処理メソッドを追加
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 自分で考えるヒント -->
+      <section class="bg-yellow-50 rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-yellow-800 mb-4">
+          自分で考えてみよう
+        </h2>
+        <div class="space-y-4 text-yellow-700">
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >1</span
+            >
+            <p>
+              「上から踏んだ」をどうやって判定する？プレイヤーと敵のY座標を比べてみよう
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >2</span
+            >
+            <p>踏んだ後、プレイヤーが少し跳ねるようにするにはどうする？</p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >3</span
+            >
+            <p>EnemyControllerに「倒される」メソッドを追加してみよう</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 模範解答 -->
+      <section class="mb-8">
+        <details class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <summary
+            class="cursor-pointer p-6 hover:bg-gray-50 transition-colors"
+          >
+            <span class="text-2xl font-bold text-gray-800">模範解答を見る</span>
+            <span class="text-gray-500 ml-2 text-sm"
+              >（まず自分で考えてから開こう！）</span
+            >
+          </summary>
+
+          <div class="p-6 border-t">
+            <!-- PlayerController変更点 -->
+            <h3 class="text-xl font-bold text-blue-700 mb-3">
+              PlayerController.cs の変更
+            </h3>
+            <p class="text-gray-600 mb-3">
+              OnCollisionEnter2Dメソッドを以下のように変更します。
+            </p>
+
+            <div class="mb-4">
+              <h4 class="font-bold text-gray-700 mb-2">追加する変数</h4>
+              <pre><code class="language-csharp">[Header("踏みつけ設定")]
+[SerializeField]
+private float stompBounceForce = 8f;  // 踏んだ後の跳ね返り力</code></pre>
+            </div>
+
+            <div class="mb-6">
+              <h4 class="font-bold text-gray-700 mb-2">
+                OnCollisionEnter2Dの変更
+              </h4>
+              <pre><code class="language-csharp">private void OnCollisionEnter2D(Collision2D collision)
+{
+    if (collision.gameObject.CompareTag("Enemy"))
+    {
+        // 衝突点を取得して、上から踏んだか判定
+        // プレイヤーの下端が敵の中心より上にあれば「踏んだ」
+        float playerBottom = transform.position.y -
+            GetComponent&lt;BoxCollider2D&gt;().bounds.extents.y;
+        float enemyCenter = collision.transform.position.y;
+
+        if (playerBottom > enemyCenter)
+        {
+            // 踏みつけ成功！
+            // 敵を倒す
+            EnemyController enemy =
+                collision.gameObject.GetComponent&lt;EnemyController&gt;();
+            if (enemy != null)
+            {
+                enemy.OnStomped();
+            }
+
+            // プレイヤーが少し跳ねる
+            rb.linearVelocity = new Vector2(
+                rb.linearVelocity.x, stompBounceForce);
+        }
+        else
+        {
+            // 横から当たった → ゲームオーバー
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.GameOver();
+            }
+        }
+    }
+}</code></pre>
+            </div>
+
+            <!-- EnemyController変更点 -->
+            <h3 class="text-xl font-bold text-green-700 mb-3 mt-8">
+              EnemyController.cs の変更
+            </h3>
+            <p class="text-gray-600 mb-3">
+              踏まれた時の処理メソッドを追加します。
+            </p>
+
+            <pre><code class="language-csharp">/// &lt;summary&gt;
+/// プレイヤーに踏まれた時の処理
+/// &lt;/summary&gt;
+public void OnStomped()
+{
+    // 動きを止める
+    rb.linearVelocity = Vector2.zero;
+
+    // コライダーを無効化（もう当たらないように）
+    GetComponent&lt;BoxCollider2D&gt;().enabled = false;
+
+    // 潰れるアニメーション（Y方向に縮める）
+    transform.localScale = new Vector3(
+        transform.localScale.x,
+        transform.localScale.y * 0.3f,
+        transform.localScale.z
+    );
+
+    // 少し待ってから消す
+    Destroy(gameObject, 0.3f);
+}</code></pre>
+
+            <!-- 解説 -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
+              <h4 class="font-bold text-blue-800 mb-2">解説</h4>
+              <ul class="text-blue-700 space-y-1 text-sm">
+                <li>
+                  ・<code>bounds.extents.y</code>
+                  はコライダーの高さの半分です。これでプレイヤーの足元の位置がわかります
+                </li>
+                <li>
+                  ・プレイヤーの足元が敵の中心より上にあれば、上から踏んだと判定します
+                </li>
+                <li>
+                  ・踏んだ後は
+                  <code>stompBounceForce</code>
+                  で上方向の速度を与えて跳ね返ります
+                </li>
+                <li>
+                  ・<code>Destroy(gameObject, 0.3f)</code>
+                  は0.3秒後にオブジェクトを消します
+                </li>
+              </ul>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- Unityでの設定 -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Unityでの設定</h2>
+        <div class="space-y-3">
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >1</span
+            >
+            <p class="text-gray-600">
+              PlayerControllerのInspectorで<code
+                class="bg-gray-100 px-1 rounded"
+                >Stomp Bounce Force</code
+              >の値を調整（8くらいがおすすめ）
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >2</span
+            >
+            <p class="text-gray-600">敵にBoxCollider2Dが付いていることを確認</p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >3</span
+            >
+            <p class="text-gray-600">
+              プレイして、上からジャンプで倒せるか・横から当たるとゲームオーバーになるかテスト
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- チャレンジ -->
+      <section
+        class="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg shadow-lg p-6 mb-8"
+      >
+        <h2 class="text-xl font-bold text-gray-800 mb-3">追加チャレンジ</h2>
+        <ul class="space-y-2 text-gray-600 text-sm">
+          <li>・敵を倒した時にスコアを加算してみよう（応用4と組み合わせ）</li>
+          <li>・踏みつけた時に効果音を鳴らしてみよう（応用5と組み合わせ）</li>
+          <li>・踏めない敵（トゲ付きなど）を作ってみよう</li>
+        </ul>
+      </section>
+
+      <!-- ナビゲーション -->
+      <div class="flex justify-between items-center">
+        <a
+          href="advanced.html"
+          class="text-orange-500 hover:text-orange-700 transition-colors"
+          >&larr; 応用一覧に戻る</a
+        >
+        <a
+          href="advanced2.html"
+          class="bg-sky-500 text-white px-6 py-3 rounded-lg hover:bg-sky-600 transition-colors font-bold"
+        >
+          次へ: ダブルジャンプ &rarr;
+        </a>
+      </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+      <div class="container mx-auto px-4 text-center">
+        <p>Mario Sample - Unity 2D Game Tutorial</p>
+      </div>
+    </footer>
+  </body>
+</html>

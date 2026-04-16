@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>応用2: ダブルジャンプ - Mario Sample</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <!-- ヘッダー -->
+    <header class="bg-sky-500 text-white py-4 shadow-lg">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <a
+            href="advanced.html"
+            class="text-white hover:text-sky-200 transition-colors"
+            >&larr; 応用編に戻る</a
+          >
+          <span class="text-sm bg-sky-600 px-3 py-1 rounded">応用 2</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">
+        応用2: ダブルジャンプ
+      </h1>
+      <p class="text-gray-600 mb-8">
+        空中でもう一度ジャンプできるようにして、アクションの幅を広げます
+      </p>
+
+      <!-- 学習内容 -->
+      <section class="bg-sky-50 rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-bold text-sky-800 mb-4">この応用で学ぶこと</h2>
+        <ul class="space-y-2 text-sky-700">
+          <li class="flex items-start gap-2">
+            <span class="text-sky-500 mt-1">&#10003;</span>
+            <span>変数でジャンプ回数を管理する方法</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-sky-500 mt-1">&#10003;</span>
+            <span>着地時のリセット処理</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-sky-500 mt-1">&#10003;</span>
+            <span>最大回数の設定で拡張しやすいコードを書く</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 仕組みの説明 -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">仕組みを考えよう</h2>
+
+        <div class="flex justify-center my-6">
+          <div class="bg-gray-100 p-6 rounded-lg">
+            <div class="flex gap-8 items-end">
+              <div class="text-center">
+                <p class="text-sm text-gray-500 mb-2">地上</p>
+                <div
+                  class="w-10 h-10 bg-blue-400 rounded mx-auto flex items-center justify-center text-white text-xs"
+                >
+                  P
+                </div>
+                <div class="w-20 h-2 bg-green-600 rounded mt-1"></div>
+                <p class="text-xs text-gray-500 mt-1">残り: 2回</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-500 mb-2">1回目</p>
+                <div
+                  class="w-10 h-10 bg-blue-400 rounded mx-auto flex items-center justify-center text-white text-xs mb-4"
+                >
+                  P
+                </div>
+                <div class="w-20 h-2 bg-green-600 rounded mt-1"></div>
+                <p class="text-xs text-gray-500 mt-1">残り: 1回</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-500 mb-2">2回目</p>
+                <div
+                  class="w-10 h-10 bg-blue-400 rounded mx-auto flex items-center justify-center text-white text-xs mb-10"
+                >
+                  P
+                </div>
+                <div class="w-20 h-2 bg-green-600 rounded mt-1"></div>
+                <p class="text-xs text-gray-500 mt-1">残り: 0回</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-500 mb-2">着地</p>
+                <div
+                  class="w-10 h-10 bg-blue-400 rounded mx-auto flex items-center justify-center text-white text-xs"
+                >
+                  P
+                </div>
+                <div class="w-20 h-2 bg-green-600 rounded mt-1"></div>
+                <p class="text-xs text-green-600 mt-1 font-bold">リセット!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+          <p class="text-blue-800">
+            <strong>ポイント:</strong>
+            「あと何回ジャンプできるか」を数える変数を用意します。ジャンプするたびに1減らし、地面に着いたらリセットします。
+          </p>
+        </div>
+      </section>
+
+      <!-- 変更するファイル -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">変更するファイル</h2>
+        <div class="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+          <h3 class="font-bold text-blue-700">PlayerController.cs</h3>
+          <p class="text-sm text-gray-600 mt-1">
+            ジャンプ回数を管理する変数を追加し、HandleJumpとCheckGroundを修正
+          </p>
+        </div>
+      </section>
+
+      <!-- 自分で考えるヒント -->
+      <section class="bg-yellow-50 rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-yellow-800 mb-4">
+          自分で考えてみよう
+        </h2>
+        <div class="space-y-4 text-yellow-700">
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >1</span
+            >
+            <p>
+              今のコードでは <code>isGrounded</code> が true
+              の時だけジャンプできる。これをどう変えればいい？
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >2</span
+            >
+            <p>「残りジャンプ回数」を管理する変数（int型）を追加してみよう</p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-yellow-400 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >3</span
+            >
+            <p>着地した時にジャンプ回数をリセットするのはどこに書く？</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 模範解答 -->
+      <section class="mb-8">
+        <details class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <summary
+            class="cursor-pointer p-6 hover:bg-gray-50 transition-colors"
+          >
+            <span class="text-2xl font-bold text-gray-800">模範解答を見る</span>
+            <span class="text-gray-500 ml-2 text-sm"
+              >（まず自分で考えてから開こう！）</span
+            >
+          </summary>
+
+          <div class="p-6 border-t">
+            <h3 class="text-xl font-bold text-blue-700 mb-3">
+              PlayerController.cs の変更
+            </h3>
+
+            <div class="mb-4">
+              <h4 class="font-bold text-gray-700 mb-2">追加する変数</h4>
+              <pre><code class="language-csharp">[Header("ダブルジャンプ設定")]
+[SerializeField]
+private int maxJumpCount = 2;  // 最大ジャンプ回数（2=ダブルジャンプ）
+
+// ジャンプ回数のカウント
+private int currentJumpCount = 0;</code></pre>
+            </div>
+
+            <div class="mb-4">
+              <h4 class="font-bold text-gray-700 mb-2">CheckGroundの変更</h4>
+              <pre><code class="language-csharp">private void CheckGround()
+{
+    // 前のフレームの接地状態を保存
+    bool wasGrounded = isGrounded;
+
+    if (groundCheck != null)
+    {
+        isGrounded = Physics2D.OverlapCircle(
+            groundCheck.position, groundCheckRadius, groundLayer);
+    }
+    else
+    {
+        isGrounded = Physics2D.OverlapCircle(
+            transform.position + Vector3.down * 0.5f,
+            groundCheckRadius,
+            groundLayer
+        );
+    }
+
+    // 着地した瞬間にジャンプ回数をリセット
+    if (!wasGrounded && isGrounded)
+    {
+        currentJumpCount = 0;
+    }
+}</code></pre>
+            </div>
+
+            <div class="mb-6">
+              <h4 class="font-bold text-gray-700 mb-2">HandleJumpの変更</h4>
+              <pre><code class="language-csharp">private void HandleJump()
+{
+    if (Keyboard.current != null &&
+        Keyboard.current.upArrowKey.wasPressedThisFrame &&
+        currentJumpCount < maxJumpCount)
+    {
+        // ジャンプ実行
+        rb.linearVelocity = new Vector2(
+            rb.linearVelocity.x, jumpForce);
+        currentJumpCount++;
+    }
+}</code></pre>
+            </div>
+
+            <!-- 解説 -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
+              <h4 class="font-bold text-blue-800 mb-2">解説</h4>
+              <ul class="text-blue-700 space-y-1 text-sm">
+                <li>
+                  ・<code>maxJumpCount = 2</code>
+                  にすると2段ジャンプ、3にすると3段ジャンプになります
+                </li>
+                <li>
+                  ・<code>currentJumpCount</code>
+                  はジャンプのたびに1増え、着地で0に戻ります
+                </li>
+                <li>
+                  ・<code>wasGrounded</code> と
+                  <code>isGrounded</code>
+                  を比較して「着地した瞬間」を検出しています
+                </li>
+                <li>
+                  ・元の <code>isGrounded</code> 条件を
+                  <code>currentJumpCount < maxJumpCount</code> に変えただけ！
+                </li>
+              </ul>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- Unityでの設定 -->
+      <section class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Unityでの設定</h2>
+        <div class="space-y-3">
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-sky-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >1</span
+            >
+            <p class="text-gray-600">
+              Inspectorで<code class="bg-gray-100 px-1 rounded"
+                >Max Jump Count</code
+              >を2に設定
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-sky-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >2</span
+            >
+            <p class="text-gray-600">
+              プレイして空中でもう一度ジャンプできるか確認
+            </p>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span
+              class="w-6 h-6 bg-sky-500 text-white rounded-full flex items-center justify-center text-sm flex-shrink-0"
+              >3</span
+            >
+            <p class="text-gray-600">
+              3に変えるとトリプルジャンプに！値を変えて遊んでみよう
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- チャレンジ -->
+      <section
+        class="bg-gradient-to-r from-sky-50 to-blue-50 rounded-lg shadow-lg p-6 mb-8"
+      >
+        <h2 class="text-xl font-bold text-gray-800 mb-3">追加チャレンジ</h2>
+        <ul class="space-y-2 text-gray-600 text-sm">
+          <li>
+            ・2段目のジャンプ力を少し弱くしてみよう（<code
+              >jumpForce * 0.7f</code
+            >
+            など）
+          </li>
+          <li>・ダブルジャンプ中は別の色やエフェクトを付けてみよう</li>
+          <li>
+            ・ステージに高い場所を作って、ダブルジャンプでないと届かないアイテムを配置してみよう
+          </li>
+        </ul>
+      </section>
+
+      <!-- ナビゲーション -->
+      <div class="flex justify-between items-center">
+        <a
+          href="advanced1.html"
+          class="text-orange-500 hover:text-orange-700 transition-colors"
+          >&larr; 応用1: 敵を踏んで倒す</a
+        >
+        <a
+          href="advanced3.html"
+          class="bg-emerald-500 text-white px-6 py-3 rounded-lg hover:bg-emerald-600 transition-colors font-bold"
+        >
+          次へ: 動く足場 &rarr;
+        </a>
+      </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+      <div class="container mx-auto px-4 text-center">
+        <p>Mario Sample - Unity 2D Game Tutorial</p>
+      </div>
+    </footer>
+  </body>
+</html>

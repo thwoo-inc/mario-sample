@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>応用編 - Mario Sample</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <!-- ヘッダー -->
+    <header class="bg-purple-600 text-white py-4 shadow-lg">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+          <a
+            href="index.html"
+            class="text-white hover:text-purple-200 transition-colors"
+            >&larr; トップに戻る</a
+          >
+          <span class="text-sm bg-purple-700 px-3 py-1 rounded">応用編</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="container mx-auto px-4 py-8 max-w-4xl">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">
+        応用編: もっとゲームを面白くしよう
+      </h1>
+      <p class="text-gray-600 mb-8">
+        基礎の4ステップが終わったら、好きな機能を追加してゲームをパワーアップさせよう！<br />どの応用から始めてもOKです。
+      </p>
+
+      <!-- 注意書き -->
+      <div class="bg-purple-50 border-l-4 border-purple-400 p-4 mb-8">
+        <p class="text-purple-800">
+          <strong>ヒント:</strong>
+          各応用には「どのスクリプトを変更するか」と「模範解答コード」が載っています。まずは自分で考えてから、答えを見てみよう！
+        </p>
+      </div>
+
+      <!-- 応用一覧 -->
+      <div class="space-y-6">
+        <!-- 応用1 -->
+        <a
+          href="advanced1.html"
+          class="block bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden group"
+        >
+          <div class="flex">
+            <div
+              class="bg-orange-500 text-white py-6 px-6 flex items-center justify-center min-w-[80px]"
+            >
+              <span class="text-2xl font-bold">1</span>
+            </div>
+            <div class="p-5 flex-1">
+              <h3
+                class="text-xl font-bold text-gray-800 group-hover:text-orange-500 transition-colors"
+              >
+                敵を踏んで倒す
+              </h3>
+              <p class="text-gray-600 mt-1">
+                マリオのように敵の上からジャンプで踏みつけて倒せるようにしよう
+              </p>
+              <div class="mt-3 flex flex-wrap gap-2 text-sm">
+                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded"
+                  >PlayerController 変更</span
+                >
+                <span class="bg-green-100 text-green-700 px-2 py-1 rounded"
+                  >EnemyController 変更</span
+                >
+                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded"
+                  >衝突方向の判定</span
+                >
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- 応用2 -->
+        <a
+          href="advanced2.html"
+          class="block bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden group"
+        >
+          <div class="flex">
+            <div
+              class="bg-sky-500 text-white py-6 px-6 flex items-center justify-center min-w-[80px]"
+            >
+              <span class="text-2xl font-bold">2</span>
+            </div>
+            <div class="p-5 flex-1">
+              <h3
+                class="text-xl font-bold text-gray-800 group-hover:text-sky-500 transition-colors"
+              >
+                ダブルジャンプ
+              </h3>
+              <p class="text-gray-600 mt-1">
+                空中でもう一度ジャンプできるようにして、より高い場所へ行けるようにしよう
+              </p>
+              <div class="mt-3 flex flex-wrap gap-2 text-sm">
+                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded"
+                  >PlayerController 変更</span
+                >
+                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded"
+                  >ジャンプ回数の管理</span
+                >
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- 応用3 -->
+        <a
+          href="advanced3.html"
+          class="block bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden group"
+        >
+          <div class="flex">
+            <div
+              class="bg-emerald-500 text-white py-6 px-6 flex items-center justify-center min-w-[80px]"
+            >
+              <span class="text-2xl font-bold">3</span>
+            </div>
+            <div class="p-5 flex-1">
+              <h3
+                class="text-xl font-bold text-gray-800 group-hover:text-emerald-500 transition-colors"
+              >
+                動く足場
+              </h3>
+              <p class="text-gray-600 mt-1">
+                左右や上下に動く足場を作って、ステージのバリエーションを増やそう
+              </p>
+              <div class="mt-3 flex flex-wrap gap-2 text-sm">
+                <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded"
+                  >MovingPlatform 新規</span
+                >
+                <span class="bg-green-100 text-green-700 px-2 py-1 rounded"
+                  >StageBuilder 変更</span
+                >
+                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded"
+                  >Sin関数の応用</span
+                >
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- 応用4 -->
+        <a
+          href="advanced4.html"
+          class="block bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden group"
+        >
+          <div class="flex">
+            <div
+              class="bg-amber-500 text-white py-6 px-6 flex items-center justify-center min-w-[80px]"
+            >
+              <span class="text-2xl font-bold">4</span>
+            </div>
+            <div class="p-5 flex-1">
+              <h3
+                class="text-xl font-bold text-gray-800 group-hover:text-amber-500 transition-colors"
+              >
+                スコアとタイマー
+              </h3>
+              <p class="text-gray-600 mt-1">
+                敵を倒すとスコアが増え、制限時間内にクリアを目指すシステムを作ろう
+              </p>
+              <div class="mt-3 flex flex-wrap gap-2 text-sm">
+                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded"
+                  >GameManager 変更</span
+                >
+                <span class="bg-green-100 text-green-700 px-2 py-1 rounded"
+                  >GameUI 変更</span
+                >
+                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded"
+                  >Time.deltaTime</span
+                >
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- 応用5 -->
+        <a
+          href="advanced5.html"
+          class="block bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden group"
+        >
+          <div class="flex">
+            <div
+              class="bg-pink-500 text-white py-6 px-6 flex items-center justify-center min-w-[80px]"
+            >
+              <span class="text-2xl font-bold">5</span>
+            </div>
+            <div class="p-5 flex-1">
+              <h3
+                class="text-xl font-bold text-gray-800 group-hover:text-pink-500 transition-colors"
+              >
+                BGMと効果音
+              </h3>
+              <p class="text-gray-600 mt-1">
+                ジャンプ、アイテム取得、ゲームオーバーなどに音を付けてゲームを盛り上げよう
+              </p>
+              <div class="mt-3 flex flex-wrap gap-2 text-sm">
+                <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded"
+                  >SoundManager 新規</span
+                >
+                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded"
+                  >各スクリプト 変更</span
+                >
+                <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded"
+                  >AudioSource</span
+                >
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- 発展アイデア -->
+      <section class="mt-12 bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+          さらにチャレンジしたい人へ
+        </h2>
+        <p class="text-gray-600 mb-4">
+          応用編が終わったら、こんな機能にも挑戦してみよう！
+        </p>
+        <div class="grid md:grid-cols-2 gap-4 text-sm">
+          <div class="bg-gray-50 rounded-lg p-3">
+            <span class="font-bold text-gray-700">パワーアップアイテム</span>
+            <p class="text-gray-500 mt-1">
+              大きくなったり、スピードアップしたり
+            </p>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3">
+            <span class="font-bold text-gray-700">ステージセレクト</span>
+            <p class="text-gray-500 mt-1">複数のステージを選んでプレイ</p>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3">
+            <span class="font-bold text-gray-700">ボスキャラ</span>
+            <p class="text-gray-500 mt-1">ステージの最後にボス戦を追加</p>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-3">
+            <span class="font-bold text-gray-700">セーブ&ロード</span>
+            <p class="text-gray-500 mt-1">PlayerPrefsでハイスコアを保存</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ナビゲーション -->
+      <div class="flex justify-start items-center mt-8">
+        <a
+          href="index.html"
+          class="text-purple-500 hover:text-purple-700 transition-colors"
+          >&larr; トップに戻る</a
+        >
+      </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="bg-gray-800 text-gray-400 py-6 mt-12">
+      <div class="container mx-auto px-4 text-center">
+        <p>Mario Sample - Unity 2D Game Tutorial</p>
+      </div>
+    </footer>
+  </body>
+</html>
